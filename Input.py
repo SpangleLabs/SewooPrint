@@ -53,4 +53,4 @@ class Input(object):
                     pixval = 0
                 else:
                     pixnum += 1
-        return image_string
+        return image_string + b'\x1d\x2f\x00'
