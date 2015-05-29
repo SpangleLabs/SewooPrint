@@ -54,3 +54,33 @@ class Input(object):
                 else:
                     pixnum += 1
         return image_string + b'\x1d\x2f\x00'
+    
+    @staticmethod
+    def loadImageSilhouetteFile(fileName):
+        image = Image.open(fileName).convert('RGBA')
+        width,height = image.size
+        newwidth = 400
+        scalefactor = width/newwidth
+        newheight = height//scalefactor
+        endwidth = math.ceil(newwidth/8)*8
+        endheight = math.ceil(newheight/8)*8
+        image = image.resize((endwidth,endheight),Image.ANTIALIAS)
+        
+        image_string = b'\x1d\x2a'
+        image_string += bytes([endwidth//8,endheight//8])
+        pixnum = 0
+        pixval = 0
+        for x in range(endwidth):
+            for y in range(endheight):
+                r,g,b,a = image.getpixel((x,y))
+                if(a>10):
+                    pixval += 2**(7-pixnum)
+                if(pixnum==7):
+                    image_string += bytes([pixval])
+                    pixnum = 0
+                    pixval = 0
+                else:
+                    pixnum += 1
+        image_string += b'\x1d\x2f\x00'
+        return image_string
+        
