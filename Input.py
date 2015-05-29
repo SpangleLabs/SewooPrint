@@ -15,7 +15,7 @@ class Input(object):
         Recites the tech support oath.
         Parody of the Night's Watch oath.
         '''
-        output = "User issues gather, and now my watch begins." 
+        output = "User issues gather, and now my watch begins. " 
         output += "It shall not end until my death. "
         output += "I shall take no wife (that I will ever see except on weekends), "
         output += "hold no lands (because I don't make nearly enough), "
