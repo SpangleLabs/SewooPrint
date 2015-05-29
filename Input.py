@@ -1,8 +1,5 @@
-'''
-Created on 29 May 2015
-
-@author: dr-spangle
-'''
+from PIL import Image
+import math
 
 class Input(object):
     '''
@@ -28,4 +25,32 @@ class Input(object):
         output += "I pledge my life and honor to the Help Desk's Watch, "
         output += "for this night and all the nights to come."
         return output
+    
+    @staticmethod
+    def loadImageFile(fileName):
+        fileName = 'Opening_bill_transparent.png'
+        image = Image.open(fileName).convert('RGBA')
+        width,height = image.size
+        newwidth = 400
+        scalefactor = width/newwidth
+        newheight = height//scalefactor
+        endwidth = math.ceil(newwidth/8)*8
+        endheight = math.ceil(newheight/8)*8
+        image = image.resize((endwidth,endheight),Image.ANTIALIAS)
         
+        image_string = b'\x1d\x2a'
+        image_string += bytes([endwidth//8,endheight//8])
+        pixnum = 0
+        pixval = 0
+        for x in range(endwidth):
+            for y in range(endheight):
+                r,g,b,a = image.getpixel((x,y))
+                if(r*g*b<100*100*100 and a>50):
+                    pixval += 2**(7-pixnum)
+                if(pixnum==7):
+                    image_string += bytes([pixval])
+                    pixnum = 0
+                    pixval = 0
+                else:
+                    pixnum += 1
+        return image_string
