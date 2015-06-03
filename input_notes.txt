@@ -1,0 +1,30 @@
+sewooprint
+
+input
+
+choice:
+text
+image
+asciiart
+stream?
+
+
+text library:
+tech support oath
+thoughtfortheday
+scriptures
+
+
+image library:
+bill cipher
+who's that pokemon
+
+
+ascii art library:
+dragon
+deer
+xerneas
+
+
+stream:
+twitter?
