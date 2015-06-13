@@ -6,6 +6,34 @@ class Input(object):
     Stores a bunch of different raw inputs to be used.
     '''
 
+    TYPE_TEXT = "text"
+    TYPE_ASCII = "ascii"
+    TYPE_IMAGE = "image"
+    TYPE_STREAM = "stream"
+
+    def __init__():
+        '''
+        Start input choice.
+        '''
+        inputType = self.chooseInputType()
+
+    def chooseInputType():
+        '''
+        Ask the user what type of input they want
+        '''
+        print("Please select an input type.")
+        print("Available input types: text, ascii art, image, stream")
+        userInput = raw_input("Enter type:")
+        userInputClean = userInput.strip().lower()
+        if(userInputClean in ['text']):
+            return self.TYPE_TEXT
+        if(userInputClean in ['ascii','ascii art','asciiart']):
+            return self.TYPE_ASCII
+        if(userInputClean in ['image','img','picture','pic']):
+            return self.TYPE_IMAGE
+        if(userInputClean in ['stream','feed','twitter']):
+            return self.TYPE_STREAM
+
     @staticmethod
     def techSupportOath():
         '''
