@@ -16,6 +16,28 @@ class Input(object):
         Start input choice.
         '''
         inputType = self.chooseInputType()
+        if(inputType is None):
+            print("Invalid input type.")
+            return
+        if(inputType == self.TYPE_TEXT):
+            print("Text input type selected.")
+            #TODO: Handle text type input.
+            return
+        if(inputType == self.TYPE_ASCII):
+            print("Ascii art input type selected.")
+            #TODO: Handle ascii art type input.
+            return
+        if(inputType == self.TYPE_IMAGE):
+            print("Image input type selected.")
+            #TODO: Handle image type input.
+            return
+        if(inputType == self.TYPE_STREAM):
+            print("Stream input type selected.")
+            #TODO: Hande stream type input.
+            return
+        print("Unknown input type.")
+        return
+
 
     def chooseInputType():
         '''
@@ -33,6 +55,7 @@ class Input(object):
             return self.TYPE_IMAGE
         if(userInputClean in ['stream','feed','twitter']):
             return self.TYPE_STREAM
+        return None
 
     @staticmethod
     def techSupportOath():
