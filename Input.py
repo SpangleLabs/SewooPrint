@@ -1,13 +1,78 @@
 from PIL import Image
 import math
+from Printer import Printer
+from Formatter import Formatter
 
 class Input(object):
     '''
     Stores a bunch of different raw inputs to be used.
     '''
 
-    @staticmethod
-    def techSupportOath():
+    TYPE_TEXT = "text"
+    TYPE_ASCII = "ascii"
+    TYPE_IMAGE = "image"
+    TYPE_STREAM = "stream"
+
+    mPrinter = None
+    mFormatter = None
+
+    def __init__():
+        '''
+        Start input choice.
+        '''
+        self.mPrinter = Printer()
+        self.mFormatter = Formatter()
+        inputType = self.chooseInputType()
+        if(inputType is None):
+            print("Invalid input type.")
+            return
+        if(inputType == self.TYPE_TEXT):
+            print("Text input type selected.")
+            #TODO: Handle text type input.
+            return
+        if(inputType == self.TYPE_ASCII):
+            print("Ascii art input type selected.")
+            #TODO: Handle ascii art type input.
+            return
+        if(inputType == self.TYPE_IMAGE):
+            print("Image input type selected.")
+            #TODO: Handle image type input.
+            return
+        if(inputType == self.TYPE_STREAM):
+            print("Stream input type selected.")
+            #TODO: Hande stream type input.
+            return
+        print("Unknown input type.")
+        return
+
+
+    def chooseInputType():
+        '''
+        Ask the user what type of input they want
+        '''
+        print("Please select an input type.")
+        print("Available input types: text, ascii art, image, stream")
+        userInput = raw_input("Enter type:")
+        userInputClean = userInput.strip().lower()
+        if(userInputClean in ['text']):
+            return self.TYPE_TEXT
+        if(userInputClean in ['ascii','ascii art','asciiart']):
+            return self.TYPE_ASCII
+        if(userInputClean in ['image','img','picture','pic']):
+            return self.TYPE_IMAGE
+        if(userInputClean in ['stream','feed','twitter']):
+            return self.TYPE_STREAM
+        return None
+
+    def chooseTextInput():
+        'chooses a text input'
+        print("Available text inputs: tech support oath, raw.")
+        userInput = raw_input("Please select: ")
+        userInputClean = userInput.lower().strip()
+        if(userInputClean in ['tech support oath','techsupportoath','oath']):
+            printOutput = self.techSupportOath()
+
+    def techSupportOath(self):
         '''
         Recites the tech support oath.
         Parody of the Night's Watch oath.
