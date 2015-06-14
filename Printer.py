@@ -162,7 +162,7 @@ class Printer:
 
     def printRaw(self,rawdata):
         rawdata += b'\n\n\n\n\n\n\x1d\x56\x01' + b'\n'
-        printerin = win32print.OpenPrinter(Printer.default_printer())
+        printerin = win32print.OpenPrinter(Printer.defaultPrinter())
         win32print.StartDocPrinter(printerin,1,('CASHDRAWERPRINT',None,None))
         win32print.WritePrinter(printerin,rawdata)
         win32print.EndDocPrinter(printerin)
