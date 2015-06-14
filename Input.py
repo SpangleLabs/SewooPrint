@@ -152,3 +152,5 @@ class Input(object):
         image_string += b'\x1d\x2f\x00'
         return image_string
         
+if(__name__=="__main__"):
+    Input()
