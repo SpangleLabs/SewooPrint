@@ -28,7 +28,8 @@ class Input(object):
             return
         if(inputType == self.TYPE_TEXT):
             print("Text input type selected.")
-            #TODO: Handle text type input.
+            #Handle text type input.
+            self.chooseTextInput()
             return
         if(inputType == self.TYPE_ASCII):
             print("Ascii art input type selected.")
