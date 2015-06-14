@@ -141,7 +141,7 @@ class Input(object):
         pixval = 0
         for x in range(endwidth):
             for y in range(endheight):
-                r,g,b,a = image.getpixel((x,y))
+                _,_,_,a = image.getpixel((x,y))
                 if(a>10):
                     pixval += 2**(7-pixnum)
                 if(pixnum==7):
