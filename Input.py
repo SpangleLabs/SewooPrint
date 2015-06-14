@@ -70,7 +70,10 @@ class Input(object):
         userInput = input("Please select: ")
         userInputClean = userInput.lower().strip()
         if(userInputClean in ['tech support oath','techsupportoath','oath']):
-            printOutput = self.techSupportOath()
+            oathText = self.techSupportOath()
+            printOutput = self.mFormatter.title("Tech support oath")
+            printOutput += self.mFormatter.multiLine(oathText)
+            self.mPrinter.printRaw(printOutput)
 
     def techSupportOath(self):
         '''
