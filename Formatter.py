@@ -40,10 +40,16 @@ class Formatter:
         'Makes a set string bold.'
         textEncode = self.tryEncode(text)
         return b'\x1b\x21\x08' + textEncode + b'\x1b\x21\x00'
+
+    def invert(self,text):
+        textEncode = self.tryEncode(text)
+        return b'\x1d\x42\x01' + textEncode + b'\x1d\x42\x00'
     
     def title(self,text):
         'Formats a given string as a title.'
-        textEncode = self.tryEncode(text)
         spacingLeft = (self.mMaxLen-len(text))//2
         spacingRight = self.mMaxLen-len(text)-spacingLeft
-        return b'\x1d\x42\x01' + b' '*spacingLeft + textEncode + b' '*spacingRight + b'\x1d\x42\x00\n'
+        titleText = ' '*spacingLeft + text + ' '*spacingRight
+        return self.invert(titleText)
+    
+
