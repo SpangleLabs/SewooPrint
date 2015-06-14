@@ -1,5 +1,7 @@
 from PIL import Image
 import math
+from Printer import Printer
+from Formatter import Formatter
 
 class Input(object):
     '''
@@ -11,10 +13,15 @@ class Input(object):
     TYPE_IMAGE = "image"
     TYPE_STREAM = "stream"
 
+    mPrinter = None
+    mFormatter = None
+
     def __init__():
         '''
         Start input choice.
         '''
+        self.mPrinter = Printer()
+        self.mFormatter = Formatter()
         inputType = self.chooseInputType()
         if(inputType is None):
             print("Invalid input type.")
@@ -57,8 +64,15 @@ class Input(object):
             return self.TYPE_STREAM
         return None
 
-    @staticmethod
-    def techSupportOath():
+    def chooseTextInput():
+        'chooses a text input'
+        print("Available text inputs: tech support oath, raw.")
+        userInput = raw_input("Please select: ")
+        userInputClean = userInput.lower().strip()
+        if(userInputClean in ['tech support oath','techsupportoath','oath']):
+            printOutput = self.techSupportOath()
+
+    def techSupportOath(self):
         '''
         Recites the tech support oath.
         Parody of the Night's Watch oath.
