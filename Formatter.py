@@ -31,12 +31,19 @@ class Formatter:
     def tryEncode(self,text):
         'Tries to encode string to bytes, unless it\'s already bytes.'
         try:
-            encodeText = text.encode()
-            return encodeText
+            textEncode = text.encode()
+            return textEncode
         except AttributeError:
             return text
 
     def bold(self,text):
         'Makes a set string bold.'
-        encodeText = self.tryEncode(text)
-        return b'\x1b\x21\x08' + encodeText + b'\x1b\x21\x00'
+        textEncode = self.tryEncode(text)
+        return b'\x1b\x21\x08' + textEncode + b'\x1b\x21\x00'
+    
+    def title(self,text):
+        'Formats a given string as a title.'
+        textEncode = self.tryEncode(text)
+        spacingLeft = (self.mMaxLen-len(text))//2
+        spacingRight = self.mMaxLen-len(text)-spacingLeft
+        return b'\x1d\x42\x01' + b' '*spacingLeft + textEncode + b' '*spacingRight + b'\x1d\x42\x00\n'
