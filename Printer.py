@@ -3,36 +3,29 @@ import win32print
 class Printer:
     mMaxLen = 42
 
-    def printText(self,text,printerin):
-        rawdata = text.encode().replace(b'\xc2\xa3',b'\x9c') + b'\n\n\n\n\n\n\x1d\x56\x01' + b'\n'
-        printerin = win32print.OpenPrinter(printerin)
-        win32print.StartDocPrinter(printerin,1,('CALLERIDPRINT',None,None))
-        win32print.WritePrinter(printerin,rawdata)
-        win32print.EndDocPrinter(printerin)
-        win32print.ClosePrinter(printerin)
-        return bytes
-
     def defaultPrinter(self):
         return win32print.GetDefaultPrinter()
 
     def listPrinters(self):
-        printerlist = [item[2] for item in win32print.EnumPrinters(2)]
-        blacklist = ['Fax','Send To OneNote 2013','Microsoft XPS Document Writer']
-        for item in blacklist:
-            if(item in printerlist):
-                printerlist.remove(item)
-        return printerlist
+        printerList = [item[2] for item in win32print.EnumPrinters(2)]
+        blackList = ['Fax','Send To OneNote 2013','Microsoft XPS Document Writer']
+        for item in blackList:
+            if(item in printerList):
+                printerList.remove(item)
+        return printerList
 
-    def bold(self,text):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        return b'\x1b\x21\x08' + text + b'\x1b\x21\x00'
+    def printRaw(self,rawdata):
+        rawdata += b'\n\n\n\n\n\n\x1d\x56\x01' + b'\n'
+        printerin = win32print.OpenPrinter(self.defaultPrinter())
+        win32print.StartDocPrinter(printerin,1,('CASHDRAWERPRINT',None,None))
+        win32print.WritePrinter(printerin,rawdata)
+        win32print.EndDocPrinter(printerin)
+        win32print.ClosePrinter(printerin)
 
-    def title(self,text):
-        spacing = (42-len(text))//2
-        return b'\x1d\x42\x01' + (' '*spacing+text+' '*spacing).encode() + b'\x1d\x42\x00\n'
+    def printText(self,text,printerin):
+        textEncode = text.encode().replace(b'\xc2\xa3',b'\x9c')
+        self.printRaw(textEncode)
+        return textEncode
 
     def invert(self,text):
         try:
@@ -160,28 +153,15 @@ class Printer:
             columnout.append(colout)
         return gap.join(columnout) + b'\n'
 
-    def printRaw(self,rawdata):
-        rawdata += b'\n\n\n\n\n\n\x1d\x56\x01' + b'\n'
-        printerin = win32print.OpenPrinter(self.defaultPrinter())
-        win32print.StartDocPrinter(printerin,1,('CASHDRAWERPRINT',None,None))
-        win32print.WritePrinter(printerin,rawdata)
-        win32print.EndDocPrinter(printerin)
-        win32print.ClosePrinter(printerin)
-
     def testPrint(self):
-        rawdata = 'normal text'.encode() + b'\n'
-        rawdata += Printer.bold('bold text') + b'\n'
-        rawdata += Printer.invert('invert text') + b'\n'
-        rawdata += Printer.underline('underline') + b'\n'
+        rawData = 'normal text'.encode() + b'\n'
+        rawData += Printer.bold('bold text') + b'\n'
+        rawData += Printer.invert('invert text') + b'\n'
+        rawData += Printer.underline('underline') + b'\n'
         for num in range(256):
-            rawdata += b'\x1b\x21' + chr(num).encode() + ('test #'+str(num)).encode() + b'\x1b\x21\x00\n'
-        rawdata += 'normal'.encode() + b'\n' #normal?
-        rawdata += b'\n\n\n\n\n\n\x1d\x56\x01' + b'\n'
-        printerin = win32print.OpenPrinter(Printer.default_printer())
-        win32print.StartDocPrinter(printerin,1,('CASHDRAWERPRINT',None,None))
-        win32print.WritePrinter(printerin,rawdata)
-        win32print.EndDocPrinter(printerin)
-        win32print.ClosePrinter(printerin)
+            rawData += b'\x1b\x21' + chr(num).encode() + ('test #'+str(num)).encode() + b'\x1b\x21\x00\n'
+        rawData += 'normal'.encode() + b'\n' #normal?
+        self.printRaw(rawData)
 
     def printOrder(self,companyname,orderdata,printerin):
         rawdata = Printer.title(companyname) + b'\n'
