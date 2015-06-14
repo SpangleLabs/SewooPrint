@@ -16,7 +16,7 @@ class Input(object):
     mPrinter = None
     mFormatter = None
 
-    def __init__():
+    def __init__(self):
         '''
         Start input choice.
         '''
@@ -46,13 +46,13 @@ class Input(object):
         return
 
 
-    def chooseInputType():
+    def chooseInputType(self):
         '''
         Ask the user what type of input they want
         '''
         print("Please select an input type.")
         print("Available input types: text, ascii art, image, stream")
-        userInput = raw_input("Enter type:")
+        userInput = input("Enter type:")
         userInputClean = userInput.strip().lower()
         if(userInputClean in ['text']):
             return self.TYPE_TEXT
@@ -64,10 +64,10 @@ class Input(object):
             return self.TYPE_STREAM
         return None
 
-    def chooseTextInput():
+    def chooseTextInput(self):
         'chooses a text input'
         print("Available text inputs: tech support oath, raw.")
-        userInput = raw_input("Please select: ")
+        userInput = input("Please select: ")
         userInputClean = userInput.lower().strip()
         if(userInputClean in ['tech support oath','techsupportoath','oath']):
             printOutput = self.techSupportOath()
