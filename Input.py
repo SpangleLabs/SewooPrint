@@ -53,7 +53,7 @@ class Input(object):
         '''
         print("Please select an input type.")
         print("Available input types: text, ascii art, image, stream")
-        userInput = input("Enter type:")
+        userInput = input("Enter type: ")
         userInputClean = userInput.strip().lower()
         if(userInputClean in ['text']):
             return self.TYPE_TEXT
