@@ -26,7 +26,7 @@ class Formatter:
             else:
                 line = temp
         textLines.append(line)
-        return "\n".join(textLines)
+        return self.tryEncode("\n".join(textLines))
 
     def tryEncode(self,text):
         'Tries to encode string to bytes, unless it\'s already bytes.'
