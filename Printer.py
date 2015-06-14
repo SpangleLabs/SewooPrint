@@ -1,8 +1,9 @@
 import win32print
 
 class Printer:
+    mMaxLen = 42
 
-    def print_text(self,text,printerin):
+    def printText(self,text,printerin):
         rawdata = text.encode().replace(b'\xc2\xa3',b'\x9c') + b'\n\n\n\n\n\n\x1d\x56\x01' + b'\n'
         printerin = win32print.OpenPrinter(printerin)
         win32print.StartDocPrinter(printerin,1,('CALLERIDPRINT',None,None))
@@ -11,10 +12,10 @@ class Printer:
         win32print.ClosePrinter(printerin)
         return bytes
 
-    def default_printer(self):
+    def defaultPrinter(self):
         return win32print.GetDefaultPrinter()
 
-    def list_printers(self):
+    def listPrinters(self):
         printerlist = [item[2] for item in win32print.EnumPrinters(2)]
         blacklist = ['Fax','Send To OneNote 2013','Microsoft XPS Document Writer']
         for item in blacklist:
@@ -47,14 +48,14 @@ class Printer:
             pass
         return b'\x1b\x2d\x01' + text + b'\x1b\x2d\x00'
 
-    def rotate90degrees(self,text):
+    def rotate90Degrees(self,text):
         try:
             text = text.encode()
         except AttributeError:
             pass
         return b'\x1b\x56\x01' + text + b'\x1b\x56\x00'
 
-    def upsidedown(self,text):
+    def upsideDown(self,text):
         try:
             text = text.encode()
         except AttributeError:
@@ -69,27 +70,27 @@ class Printer:
         amount = min(amount,8)
         return b'\x1d\x21' + chr(amount-1).encode() + text + b'\x1d\x21\x00'
 
-    def tinytext(self,text):
+    def tinyText(self,text):
         try:
             text = text.encode()
         except AttributeError:
             pass
         return b'\x1b\x21\x01' + text + b'\x1b\x21\x00'
 
-    def tinytextbold(self,text):
+    def tinyTextBold(self,text):
         try:
             text = text.encode()
         except AttributeError:
             pass
         return b'\x1b\x21\x09' + text + b'\x1b\x21\x00'
 
-    def amountstring(self,amount):
+    def amountString(self,amount):
         return b'\x9c' + ("%.2f"%amount).encode()
 
-    def numstring(self,num):
+    def numString(self,num):
         return (str(num).rstrip('0').rstrip('.').encode() if '.' in str(num) else str(num).encode())
 
-    def leftright(self,lefttext,righttext,width,bold=[]):
+    def leftRight(self,lefttext,righttext,width,bold=[]):
         try:
             lefttext = lefttext.encode()
         except AttributeError:
@@ -115,7 +116,7 @@ class Printer:
             text = Printer.bold(text)
         return b' '*spacing + text
 
-    def dashline(self):
+    def dashLine(self):
         return ('-'*42).encode()
 
     def columns(self,columnspec,columndata,gap=' ',spacer=' '):
@@ -159,7 +160,7 @@ class Printer:
             columnout.append(colout)
         return gap.join(columnout) + b'\n'
 
-    def print_raw(self,rawdata):
+    def printRaw(self,rawdata):
         rawdata += b'\n\n\n\n\n\n\x1d\x56\x01' + b'\n'
         printerin = win32print.OpenPrinter(Printer.default_printer())
         win32print.StartDocPrinter(printerin,1,('CASHDRAWERPRINT',None,None))
@@ -167,7 +168,7 @@ class Printer:
         win32print.EndDocPrinter(printerin)
         win32print.ClosePrinter(printerin)
 
-    def testprint(self):
+    def testPrint(self):
         rawdata = 'normal text'.encode() + b'\n'
         rawdata += Printer.bold('bold text') + b'\n'
         rawdata += Printer.invert('invert text') + b'\n'
@@ -182,7 +183,7 @@ class Printer:
         win32print.EndDocPrinter(printerin)
         win32print.ClosePrinter(printerin)
 
-    def print_order(self,companyname,orderdata,printerin):
+    def printOrder(self,companyname,orderdata,printerin):
         rawdata = Printer.title(companyname) + b'\n'
         dateformat = str(orderdata['Open_Date'].day).zfill(2)+'/'+str(orderdata['Open_Date'].month).zfill(2)+' '+str(orderdata['Open_Date'].hour).zfill(2)+':'+str(orderdata['Open_Date'].minute).zfill(2)
         rawdata += Printer.bold('Order placed:') + b' ' + dateformat.encode() + b'\n'
