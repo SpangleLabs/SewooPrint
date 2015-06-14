@@ -44,6 +44,10 @@ class Formatter:
     def invert(self,text):
         textEncode = self.tryEncode(text)
         return b'\x1d\x42\x01' + textEncode + b'\x1d\x42\x00'
+
+    def underline(self,text):
+        textEncode = self.tryEncode(text)
+        return b'\x1b\x2d\x01' + textEncode + b'\x1b\x2d\x00'
     
     def title(self,text):
         'Formats a given string as a title.'
