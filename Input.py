@@ -95,6 +95,39 @@ class Input(object):
         output += "for this night and all the nights to come."
         return output
     
+    def notMyBusiness(self):
+        '''
+        Outputs Niyi Osundere's "Not my business"
+        '''
+        output = self.mFormatter.title("Not My Business")
+        output += self.mFormatter.title("by Niyi Osundere")
+        output += b"They picked Akanni up one morning\n"
+        output += b"Beat him soft like clay\n"
+        output += b"And stuffed him down the belly\n"
+        output += b"Of a waiting jeep.\n"
+        output += b"What business of mine is it\n"
+        output += b"So long they don’t take the yam\n"
+        output += b"From my savouring mouth?\n\n"
+        output += b"They came one night\n"
+        output += b"Booted the whole house awake\n"
+        output += b"And dragged Danladi out,\n"
+        output += b"Then off to a lengthy absence.\n"
+        output += b"What business of mine is it\n"
+        output += b"So long they don’t take the yam\n"
+        output += b"From my savouring mouth?\n\n"
+        output += b"Chinwe went to work one day\n"
+        output += b"Only to find her job was gone:\n"
+        output += b"No query, no warning, no probe –\n"
+        output += b"Just one neat sack for a stainless record.\n"
+        output += b"What business of mine is it\n"
+        output += b"So long they don’t take the yam\n"
+        output += b"From my savouring mouth?\n\n"
+        output += b"And then one evening\n"
+        output += b"As I sat down to eat my yam\n"
+        output += b"A knock on the door froze my hungry hand.\n"
+        output += b"The jeep was waiting on my bewildered lawn\n"
+        output += b"Waiting, waiting in its usual silence." 
+    
     @staticmethod
     def loadImageFile(fileName):
         fileName = 'Opening_bill_transparent.png'
