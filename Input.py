@@ -133,7 +133,8 @@ class Input(object):
         output += b"As I sat down to eat my yam\n"
         output += b"A knock on the door froze my hungry hand.\n"
         output += b"The jeep was waiting on my bewildered lawn\n"
-        output += b"Waiting, waiting in its usual silence." 
+        output += b"Waiting, waiting in its usual silence."
+        return output
     
     @staticmethod
     def loadImageFile(fileName):
