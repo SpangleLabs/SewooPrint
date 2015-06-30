@@ -71,10 +71,15 @@ class Input(object):
         userInput = input("Please select: ")
         userInputClean = userInput.lower().strip()
         if(userInputClean in ['tech support oath','techsupportoath','oath']):
-            oathText = self.techSupportOath()
-            printOutput = self.mFormatter.title("Tech support oath")
-            printOutput += self.mFormatter.multiLine(oathText)
-            self.mPrinter.printRaw(printOutput)
+            oathOutput = self.techSupportOath()
+            self.mPrinter.printRaw(oathOutput)
+            print("Printing complete")
+            return
+        if(userInputClean in ['not my business','notmybusiness']):
+            poemOutput = self.notMyBusiness()
+            self.mPrinter.printRaw(poemOutput)
+            print("Printing complete")
+            return
 
     def techSupportOath(self):
         '''
@@ -93,7 +98,9 @@ class Input(object):
         output += "I am the password reset that guards the logins of men. "
         output += "I pledge my life and honor to the Help Desk's Watch, "
         output += "for this night and all the nights to come."
-        return output
+        printOutput = self.mFormatter.title("Tech support oath")
+        printOutput += self.mFormatter.multiLine(output)
+        return printOutput
     
     def notMyBusiness(self):
         '''
