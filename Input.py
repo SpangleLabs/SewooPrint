@@ -67,7 +67,7 @@ class Input(object):
 
     def chooseTextInput(self):
         'chooses a text input'
-        print("Available text inputs: tech support oath, raw.")
+        print("Available text inputs: tech support oath, not my business, raw.")
         userInput = input("Please select: ")
         userInputClean = userInput.lower().strip()
         if(userInputClean in ['tech support oath','techsupportoath','oath']):
