@@ -136,6 +136,15 @@ class Input(object):
         output += b"Waiting, waiting in its usual silence."
         return output
     
+    def halWarning(self):
+        '''
+        Outputs HAL9000's warning from the end of 2010:Odyssey Two
+        '''
+        output = self.mFormatter.bold(self.mFormatter.centreText("ALL THESE WORLDS ARE YOURS-EXCEPT EUROPA"))
+        output += b"\n"
+        output += self.mFormatter.bold(self.mFormatter.centreText("ATTEMPT NO LANDING THERE"))
+        return output
+    
     @staticmethod
     def loadImageFile(fileName):
         fileName = 'Opening_bill_transparent.png'
