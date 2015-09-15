@@ -51,9 +51,13 @@ class Formatter:
     
     def title(self,text):
         'Formats a given string as a title.'
+        return self.invert(self.centreText(text))
+    
+    def centreText(self,text):
+        'Centres text on the page.'
         spacingLeft = (self.mMaxLen-len(text))//2
         spacingRight = self.mMaxLen-len(text)-spacingLeft
-        titleText = ' '*spacingLeft + text + ' '*spacingRight
-        return self.invert(titleText)
+        centreText = ' '*spacingLeft + text + ' '*spacingRight
+        return centreText
     
 
