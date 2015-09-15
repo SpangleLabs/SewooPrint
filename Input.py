@@ -67,7 +67,7 @@ class Input(object):
 
     def chooseTextInput(self):
         'chooses a text input'
-        print("Available text inputs: tech support oath, not my business, raw.")
+        print("Available text inputs: tech support oath, not my business, HAL9000 warning, raw.")
         userInput = input("Please select: ")
         userInputClean = userInput.lower().strip()
         if(userInputClean in ['tech support oath','techsupportoath','oath']):
@@ -78,6 +78,11 @@ class Input(object):
         if(userInputClean in ['not my business','notmybusiness']):
             poemOutput = self.notMyBusiness()
             self.mPrinter.printRaw(poemOutput)
+            print("Printing complete")
+            return
+        if(userInputClean in ['hal9000 warning','hal warning','hal']):
+            warnOutput = self.halWarning()
+            self.mPrinter.printRaw(warnOutput)
             print("Printing complete")
             return
 
