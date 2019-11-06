@@ -1,8 +1,9 @@
 import win32print
 
+from document import Document
+
 
 class Printer:
-    mMaxLen = 42
 
     def default_printer(self):
         return win32print.GetDefaultPrinter()
@@ -14,6 +15,14 @@ class Printer:
             if item in printer_list:
                 printer_list.remove(item)
         return printer_list
+
+    def print_document(self, document):
+        raw_data = document.encoded + b'\n\n\n\n\n\n\x1d\x56\x01\n'
+        printer = win32print.OpenPrinter(self.default_printer())
+        win32print.StartDocPrinter(printer, 1, ('CASHDRAWERPRINT', None, None))
+        win32print.WritePrinter(printer, raw_data)
+        win32print.EndDocPrinter(printer)
+        win32print.ClosePrinter(printer)
 
     def print_raw(self, raw_data):
         raw_data += b'\n\n\n\n\n\n\x1d\x56\x01' + b'\n'
@@ -159,15 +168,14 @@ class Printer:
         return gap.join(column_out) + b'\n'
 
     def test_print(self):
-        raw_data = 'normal text'.encode() + b'\n'
-        raw_data += Printer.bold('bold text') + b'\n'
-        raw_data += self.invert('invert text') + b'\n'
-        raw_data += self.underline('underline') + b'\n'
+        document = Document().add_text("normal text").nl() \
+            .add_bold_text("bold text").nl()\
+            .add_invert_text("invert text").nl()\
+            .add_underlined_text("underline").nl()
         for num in range(256):
-            raw_data += b'\x1b\x21' + chr(num).encode() + (
-                        'test #' + str(num)).encode() + b'\x1b\x21\x00\n'
-        raw_data += 'normal'.encode() + b'\n'  # normal?
-        self.print_raw(raw_data)
+            document.add_text_with_control_code("test #"+str(num), num).nl()
+        document.add_text("normal")
+        self.print_document(document)
 
     def print_order(self, company_name, order_data, printer):
         raw_data = Printer.title(company_name) + b'\n'

@@ -39,6 +39,14 @@ class Document:
         self.encoded += _try_encode("\n".join(text_lines))
         return self
 
+    def nl(self):
+        self.encoded += b"\n"
+        return self
+
+    def add_text(self, text):
+        self.encoded += _try_encode(text)
+        return self
+
     def add_bold_text(self, text):
         """Makes a set string bold."""
         text_encode = _try_encode(text)
@@ -58,4 +66,8 @@ class Document:
     def add_title(self, text):
         """Formats a given string as a title."""
         self.add_invert_text(_center_text(text))
+        return self
+
+    def add_text_with_control_code(self, text, control_code):
+        self.encoded += b'\x1b\x21' + chr(control_code).encode() + text.encode() + b'\x1b\x21\x00\n'
         return self
