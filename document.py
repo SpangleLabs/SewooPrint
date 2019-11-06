@@ -20,6 +20,7 @@ class Document:
 
     def __init__(self):
         self.encoded = b""
+        self.has_cut = False
 
     def add_multi_line(self, text):
         """
@@ -70,4 +71,14 @@ class Document:
 
     def add_text_with_control_code(self, text, control_code):
         self.encoded += b'\x1b\x21' + chr(control_code).encode() + text.encode() + b'\x1b\x21\x00\n'
+        return self
+
+    def cut(self):
+        self.encoded += b'\n\n\n\n\n\n\x1d\x56\x01\n'
+        self.has_cut = True
+        return self
+
+    def cut_if_uncut(self):
+        if not self.has_cut:
+            self.cut()
         return self

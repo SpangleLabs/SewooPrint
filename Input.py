@@ -1,6 +1,6 @@
 from PIL import Image
 import math
-from Printer import Printer
+from Printer import PrinterRepo
 from Formatter import Formatter
 
 
@@ -21,7 +21,7 @@ class Input(object):
         """
         Start input choice.
         """
-        self.mPrinter = Printer()
+        self.mPrinter = PrinterRepo()
         self.mFormatter = Formatter()
         input_type = self.choose_input_type()
         if input_type is None:

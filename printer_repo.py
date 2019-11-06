@@ -3,7 +3,7 @@ import win32print
 from document import Document
 
 
-class Printer:
+class PrinterRepo:
 
     def default_printer(self):
         return win32print.GetDefaultPrinter()
@@ -106,9 +106,9 @@ class Printer:
             pass
         spacing = width - len(left_text + right_text)
         if 'left' in bold:
-            left_text = Printer.bold(left_text)
+            left_text = PrinterRepo.bold(left_text)
         if 'right' in bold:
-            right_text = Printer.bold(right_text)
+            right_text = PrinterRepo.bold(right_text)
         return left_text + b' ' * spacing + right_text
 
     def right(self, text, width, bold=False):
@@ -118,7 +118,7 @@ class Printer:
             pass
         spacing = width - len(text)
         if bold:
-            text = Printer.bold(text)
+            text = PrinterRepo.bold(text)
         return b' ' * spacing + text
 
     def dash_line(self):
@@ -178,32 +178,32 @@ class Printer:
         self.print_document(document)
 
     def print_order(self, company_name, order_data, printer):
-        raw_data = Printer.title(company_name) + b'\n'
+        raw_data = PrinterRepo.title(company_name) + b'\n'
         date_format = str(order_data['Open_Date'].day).zfill(2) + '/' + str(
             order_data['Open_Date'].month).zfill(2) + ' ' + str(order_data['Open_Date'].hour).zfill(
             2) + ':' + str(order_data['Open_Date'].minute).zfill(2)
-        raw_data += Printer.bold('Order placed:') + b' ' + date_format.encode() + b'\n'
+        raw_data += PrinterRepo.bold('Order placed:') + b' ' + date_format.encode() + b'\n'
         hour_print = order_data['DeliveryTime']['Hour']
         if order_data['DeliveryTime']['Meridiem'] == 'PM':
             hour_print = str(int(order_data['DeliveryTime']['Hour']) + 12)
         if order_data['DeliveryTime']['Hour'] == 'ASAP':
-            raw_data += Printer.bold('Time wanted:') + b' ' + hour_print.encode() + b'\n'
+            raw_data += PrinterRepo.bold('Time wanted:') + b' ' + hour_print.encode() + b'\n'
         else:
-            raw_data += Printer.bold('Time wanted:') + b' ' + (
+            raw_data += PrinterRepo.bold('Time wanted:') + b' ' + (
                     hour_print + ':' + order_data['DeliveryTime']['Minute']).encode() + b'\n'
-        raw_data += Printer.bold('Customer: ' + order_data['Customer']) + b'\n'
-        raw_data += Printer.bold('Number:') + b' ' + (
+        raw_data += PrinterRepo.bold('Customer: ' + order_data['Customer']) + b'\n'
+        raw_data += PrinterRepo.bold('Number:') + b' ' + (
             order_data['CustomerData']['Number']).encode() + b'\n'
         raw_data += ('  ' + order_data['CustomerData']['Street']).encode() + b'\n'
         raw_data += ('  ' + order_data['CustomerData']['City']).encode() + b'\n'
         raw_data += ('  ' + order_data['CustomerData']['Postcode']).encode() + b'\n\n'
         if order_data['Notes'] != '':
-            raw_data += Printer.bold('Notes:') + b'\n'
+            raw_data += PrinterRepo.bold('Notes:') + b'\n'
             for line in order_data['Notes'].split('\n'):
                 raw_data += b'  ' + line.encode() + b'\n'
             raw_data += b'\n'
         if order_data['Driver'] is not False:
-            raw_data += Printer.bold('Driver:') + b' ' + order_data['Driver'].encode() + b'\n'
+            raw_data += PrinterRepo.bold('Driver:') + b' ' + order_data['Driver'].encode() + b'\n'
         #        rawdata += printer.leftright('Items:','Price:',37,['left','right']) + b'\n'
         delivery_items = []
         column_spec = [{'width': 3, 'align': 'right'}, {'width': 'fill', 'align': 'left'},
@@ -222,7 +222,7 @@ class Printer:
             col_unit_price = {'text': self.amount_string(item['Price'])}
             col_total_price = {
                 'text': self.amount_string(float(item['Price']) * item['Amount']),
-                'func': Printer.bold
+                'func': PrinterRepo.bold
             }
             raw_data += self.columns(
                 column_spec,
