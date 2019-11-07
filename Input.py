@@ -1,5 +1,4 @@
-from PIL import Image
-import math
+from image import GreyScaleImage, SilhouetteImage
 from printer_repo import PrinterRepo
 from document import Document
 
@@ -153,60 +152,13 @@ class Input(object):
 
     @staticmethod
     def load_image_file(file_name):
-        image = Image.open(file_name).convert('RGBA')
-        width, height = image.size
-        new_width = 400
-        scale_factor = width / new_width
-        new_height = height // scale_factor
-        end_width = math.ceil(new_width / 8) * 8
-        end_height = math.ceil(new_height / 8) * 8
-        image = image.resize((end_width, end_height), Image.ANTIALIAS)
-
-        image_string = b'\x1d\x2a'
-        image_string += bytes([end_width // 8, end_height // 8])
-        pix_num = 0
-        pix_val = 0
-        for x in range(end_width):
-            for y in range(end_height):
-                r, g, b, a = image.getpixel((x, y))
-                if r * g * b < 100 * 100 * 100 and a > 50:
-                    pix_val += 2 ** (7 - pix_num)
-                if pix_num == 7:
-                    image_string += bytes([pix_val])
-                    pix_num = 0
-                    pix_val = 0
-                else:
-                    pix_num += 1
-        return image_string + b'\x1d\x2f\x00'
+        document = GreyScaleImage(file_name)
+        return document.encoded
 
     @staticmethod
     def load_image_silhouette_file(file_name):
-        image = Image.open(file_name).convert('RGBA')
-        width, height = image.size
-        new_width = 400
-        scale_factor = width / new_width
-        new_height = height // scale_factor
-        end_width = math.ceil(new_width / 8) * 8
-        end_height = math.ceil(new_height / 8) * 8
-        image = image.resize((end_width, end_height), Image.ANTIALIAS)
-
-        image_string = b'\x1d\x2a'
-        image_string += bytes([end_width // 8, end_height // 8])
-        pix_num = 0
-        pix_val = 0
-        for x in range(end_width):
-            for y in range(end_height):
-                _, _, _, a = image.getpixel((x, y))
-                if a > 10:
-                    pix_val += 2 ** (7 - pix_num)
-                if pix_num == 7:
-                    image_string += bytes([pix_val])
-                    pix_num = 0
-                    pix_val = 0
-                else:
-                    pix_num += 1
-        image_string += b'\x1d\x2f\x00'
-        return image_string
+        document = SilhouetteImage(file_name)
+        return document.encoded
 
 
 if __name__ == "__main__":
