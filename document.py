@@ -80,7 +80,7 @@ class TextDocument(Document):
         centered_text = _center_text(text)
         return self.add_bold_text(centered_text)
 
-    def add_invert_text(self, text):
+    def add_invert_colours_text(self, text):
         text_encode = _try_encode(text)
         self.encoded += b'\x1d\x42\x01' + text_encode + b'\x1d\x42\x00'
         return self
@@ -92,9 +92,35 @@ class TextDocument(Document):
 
     def add_title(self, text):
         """Formats a given string as a title."""
-        self.add_invert_text(_center_text(text))
+        self.add_invert_colours_text(_center_text(text))
         return self
 
     def add_text_with_control_code(self, text, control_code):
         self.encoded += b'\x1b\x21' + chr(control_code).encode() + text.encode() + b'\x1b\x21\x00\n'
+        return self
+
+    def add_text_rotated_sideays(self, text):
+        text_encode = _try_encode(text)
+        self.encoded += b'\x1b\x56\x01' + text_encode + b'\x1b\x56\x00'
+        return self
+
+    def add_upside_down_text(self, text):
+        text_encode = _try_encode(text)
+        self.encoded += b'\x1b\x7b\x01' + text_encode + b'\x1b\x7b\x00'
+        return self
+
+    def add_stretched_text(self, text, amount=2):
+        text_encode = _try_encode(text)
+        amount = min(amount, 8)
+        self.encoded += b'\x1d\x21' + chr(amount - 1).encode() + text_encode + b'\x1d\x21\x00'
+        return self
+
+    def add_tiny_text(self, text):
+        text_encode = _try_encode(text)
+        self.encoded += b'\x1b\x21\x01' + text_encode + b'\x1b\x21\x00'
+        return self
+
+    def add_tiny_bold_text(self, text):
+        text_encode = _try_encode(text)
+        self.encoded += b'\x1b\x21\x09' + text_encode + b'\x1b\x21\x00'
         return self

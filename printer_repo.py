@@ -37,56 +37,6 @@ class PrinterRepo:
         self.print_raw(text_encode)
         return text_encode
 
-    def invert(self, text):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        return b'\x1d\x42\x01' + text + b'\x1d\x42\x00'
-
-    def underline(self, text):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        return b'\x1b\x2d\x01' + text + b'\x1b\x2d\x00'
-
-    def rotate90_degrees(self, text):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        return b'\x1b\x56\x01' + text + b'\x1b\x56\x00'
-
-    def upside_down(self, text):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        return b'\x1b\x7b\x01' + text + b'\x1b\x7b\x00'
-
-    def stretch(self, text, amount=2):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        amount = min(amount, 8)
-        return b'\x1d\x21' + chr(amount - 1).encode() + text + b'\x1d\x21\x00'
-
-    def tiny_text(self, text):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        return b'\x1b\x21\x01' + text + b'\x1b\x21\x00'
-
-    def tiny_text_bold(self, text):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        return b'\x1b\x21\x09' + text + b'\x1b\x21\x00'
-
     def amount_string(self, amount):
         return b'\x9c' + ("%.2f" % amount).encode()
 
@@ -170,7 +120,7 @@ class PrinterRepo:
     def test_print(self):
         document = TextDocument().add_text("normal text").nl() \
             .add_bold_text("bold text").nl()\
-            .add_invert_text("invert text").nl()\
+            .add_invert_colours_text("invert text").nl()\
             .add_underlined_text("underline").nl()
         for num in range(256):
             document.add_text_with_control_code("test #"+str(num), num).nl()
