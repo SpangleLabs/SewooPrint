@@ -90,18 +90,19 @@ class Input(object):
         Recites the tech support oath.
         Parody of the Night's Watch oath.
         """
-        output = "User issues gather, and now my watch begins. "
-        output += "It shall not end until my death. "
-        output += "I shall take no wife (that I will ever see except on weekends), "
-        output += "hold no lands (because I don't make nearly enough), "
-        output += "father no children (because I will never be home anyway). "
-        output += "I shall receive no thanks and win no glory. "
-        output += "I shall live and die at my desk. "
-        output += "I am the antivirus in the darkness. "
-        output += "I am the coder on the walls. "
-        output += "I am the password reset that guards the logins of men. "
-        output += "I pledge my life and honor to the Help Desk's Watch, "
-        output += "for this night and all the nights to come."
+        output = """\
+User issues gather, and now my watch begins.
+It shall not end until my death.
+I shall take no wife (that I will ever see except on weekends),
+hold no lands (because I don't make nearly enough),
+father no children (because I will never be home anyway).
+I shall receive no thanks and win no glory.
+I shall live and die at my desk.
+I am the antivirus in the darkness.
+I am the coder on the walls.
+I am the password reset that guards the logins of men.
+I pledge my life and honor to the Help Desk's Watch,
+for this night and all the nights to come."""
         document = TextDocument().add_title("Tech support oath")
         document.add_line_wrapped_text(output)
         return document
@@ -110,32 +111,36 @@ class Input(object):
         """
         Outputs Niyi Osundere's "Not my business"
         """
-        poem = "They picked Akanni up one morning\n"
-        poem += "Beat him soft like clay\n"
-        poem += "And stuffed him down the belly\n"
-        poem += "Of a waiting jeep.\n"
-        poem += "What business of mine is it\n"
-        poem += "So long they don't take the yam\n"
-        poem += "From my savouring mouth?\n\n"
-        poem += "They came one night\n"
-        poem += "Booted the whole house awake\n"
-        poem += "And dragged Danladi out,\n"
-        poem += "Then off to a lengthy absence.\n"
-        poem += "What business of mine is it\n"
-        poem += "So long they don't take the yam\n"
-        poem += "From my savouring mouth?\n\n"
-        poem += "Chinwe went to work one day\n"
-        poem += "Only to find her job was gone:\n"
-        poem += "No query, no warning, no probe -\n"
-        poem += "Just one neat sack for a stainless record.\n"
-        poem += "What business of mine is it\n"
-        poem += "So long they don't take the yam\n"
-        poem += "From my savouring mouth?\n\n"
-        poem += "And then one evening\n"
-        poem += "As I sat down to eat my yam\n"
-        poem += "A knock on the door froze my hungry hand.\n"
-        poem += "The jeep was waiting on my bewildered lawn\n"
-        poem += "Waiting, waiting in its usual silence."
+        poem = """ \
+They picked Akanni up one morning
+Beat him soft like clay
+And stuffed him down the belly
+Of a waiting jeep.
+What business of mine is it
+So long they don't take the yam
+From my savouring mouth?
+        
+They came one night
+Booted the whole house awake
+And dragged Danladi out,
+Then off to a lengthy absence.
+What business of mine is it
+So long they don't take the yam
+From my savouring mouth?
+
+Chinwe went to work one day
+Only to find her job was gone:
+No query, no warning, no probe -
+Just one neat sack for a stainless record.
+What business of mine is it
+So long they don't take the yam
+From my savouring mouth?
+
+And then one evening
+As I sat down to eat my yam
+A knock on the door froze my hungry hand.
+The jeep was waiting on my bewildered lawn
+Waiting, waiting in its usual silence."""
         document = TextDocument().add_title("Not My Business")
         document.add_title("by Niyi Osundere")
         document.add_line_wrapped_text(poem)
