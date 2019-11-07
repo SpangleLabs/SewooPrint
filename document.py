@@ -22,7 +22,7 @@ class Document:
         self.encoded = b""
         self.has_cut = False
 
-    def add_multi_line(self, text):
+    def add_line_wrapped_text(self, text):
         """
         Formats text to be printed over multiple lines, breaking at spaces.
         """
@@ -53,6 +53,10 @@ class Document:
         text_encode = _try_encode(text)
         self.encoded += b'\x1b\x21\x08' + text_encode + b'\x1b\x21\x00'
         return self
+
+    def add_bold_centered_text(self, text):
+        centered_text = _center_text(text)
+        return self.add_bold_text(centered_text)
 
     def add_invert_text(self, text):
         text_encode = _try_encode(text)

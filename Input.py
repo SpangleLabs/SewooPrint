@@ -1,9 +1,10 @@
 from PIL import Image
 import math
-from Printer import PrinterRepo
-from Formatter import Formatter
+from printer_repo import PrinterRepo
+from document import Document
 
 
+# noinspection PyMethodMayBeStatic
 class Input(object):
     """
     Stores a bunch of different raw inputs to be used.
@@ -15,14 +16,12 @@ class Input(object):
     TYPE_STREAM = "stream"
 
     mPrinter = None
-    mFormatter = None
 
     def __init__(self):
         """
         Start input choice.
         """
         self.mPrinter = PrinterRepo()
-        self.mFormatter = Formatter()
         input_type = self.choose_input_type()
         if input_type is None:
             print("Invalid input type.")
@@ -71,20 +70,21 @@ class Input(object):
         user_input = input("Please select: ")
         user_input_clean = user_input.lower().strip()
         if user_input_clean in ['tech support oath', 'techsupportoath', 'oath']:
-            oath_output = self.tech_support_oath()
-            self.mPrinter.print_raw(oath_output)
+            oath_document = self.tech_support_oath()
+            self.mPrinter.print_document(oath_document)
             print("Printing complete")
             return
         if user_input_clean in ['not my business', 'notmybusiness']:
-            poem_output = self.not_my_business()
-            self.mPrinter.print_raw(poem_output)
+            poem_document = self.not_my_business()
+            self.mPrinter.print_document(poem_document)
             print("Printing complete")
             return
         if user_input_clean in ['hal9000 warning', 'hal warning', 'hal']:
-            warn_output = self.hal_warning()
-            self.mPrinter.print_raw(warn_output)
+            warn_document = self.hal_warning()
+            self.mPrinter.print_document(warn_document)
             print("Printing complete")
             return
+        print("I don't know that one.")
 
     def tech_support_oath(self):
         """
@@ -103,53 +103,53 @@ class Input(object):
         output += "I am the password reset that guards the logins of men. "
         output += "I pledge my life and honor to the Help Desk's Watch, "
         output += "for this night and all the nights to come."
-        print_output = self.mFormatter.title("Tech support oath")
-        print_output += self.mFormatter.multiLine(output)
-        return print_output
+        document = Document().add_title("Tech support oath")
+        document.add_line_wrapped_text(output)
+        return document
 
     def not_my_business(self):
         """
         Outputs Niyi Osundere's "Not my business"
         """
-        output = self.mFormatter.title("Not My Business")
-        output += self.mFormatter.title("by Niyi Osundere")
-        output += b"They picked Akanni up one morning\n"
-        output += b"Beat him soft like clay\n"
-        output += b"And stuffed him down the belly\n"
-        output += b"Of a waiting jeep.\n"
-        output += b"What business of mine is it\n"
-        output += b"So long they don't take the yam\n"
-        output += b"From my savouring mouth?\n\n"
-        output += b"They came one night\n"
-        output += b"Booted the whole house awake\n"
-        output += b"And dragged Danladi out,\n"
-        output += b"Then off to a lengthy absence.\n"
-        output += b"What business of mine is it\n"
-        output += b"So long they don't take the yam\n"
-        output += b"From my savouring mouth?\n\n"
-        output += b"Chinwe went to work one day\n"
-        output += b"Only to find her job was gone:\n"
-        output += b"No query, no warning, no probe -\n"
-        output += b"Just one neat sack for a stainless record.\n"
-        output += b"What business of mine is it\n"
-        output += b"So long they don't take the yam\n"
-        output += b"From my savouring mouth?\n\n"
-        output += b"And then one evening\n"
-        output += b"As I sat down to eat my yam\n"
-        output += b"A knock on the door froze my hungry hand.\n"
-        output += b"The jeep was waiting on my bewildered lawn\n"
-        output += b"Waiting, waiting in its usual silence."
-        return output
+        poem = "They picked Akanni up one morning\n"
+        poem += "Beat him soft like clay\n"
+        poem += "And stuffed him down the belly\n"
+        poem += "Of a waiting jeep.\n"
+        poem += "What business of mine is it\n"
+        poem += "So long they don't take the yam\n"
+        poem += "From my savouring mouth?\n\n"
+        poem += "They came one night\n"
+        poem += "Booted the whole house awake\n"
+        poem += "And dragged Danladi out,\n"
+        poem += "Then off to a lengthy absence.\n"
+        poem += "What business of mine is it\n"
+        poem += "So long they don't take the yam\n"
+        poem += "From my savouring mouth?\n\n"
+        poem += "Chinwe went to work one day\n"
+        poem += "Only to find her job was gone:\n"
+        poem += "No query, no warning, no probe -\n"
+        poem += "Just one neat sack for a stainless record.\n"
+        poem += "What business of mine is it\n"
+        poem += "So long they don't take the yam\n"
+        poem += "From my savouring mouth?\n\n"
+        poem += "And then one evening\n"
+        poem += "As I sat down to eat my yam\n"
+        poem += "A knock on the door froze my hungry hand.\n"
+        poem += "The jeep was waiting on my bewildered lawn\n"
+        poem += "Waiting, waiting in its usual silence."
+        document = Document().add_title("Not My Business")
+        document.add_title("by Niyi Osundere")
+        document.add_line_wrapped_text(poem)
+        return document
 
     def hal_warning(self):
         """
         Outputs HAL9000's warning from the end of 2010:Odyssey Two
         """
-        output = self.mFormatter.bold(
-            self.mFormatter.centreText("ALL THESE WORLDS ARE YOURS-EXCEPT EUROPA"))
-        output += b"\n"
-        output += self.mFormatter.bold(self.mFormatter.centreText("ATTEMPT NO LANDING THERE"))
-        return output
+        document = Document()\
+            .add_bold_centered_text("ALL THESE WORLDS ARE YOURS-EXCEPT EUROPA").nl()\
+            .add_bold_centered_text("ATTEMPT NO LANDING THERE")
+        return document
 
     @staticmethod
     def load_image_file(file_name):
