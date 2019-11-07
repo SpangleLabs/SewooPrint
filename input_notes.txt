@@ -1,30 +1,33 @@
 sewooprint
 
-input
+# input
 
-choice:
-text
+## choice:
+DONE-text
 image
 asciiart
 stream?
 
 
-text library:
-tech support oath
-thoughtfortheday
-scriptures
+## text library:
+DONE: tech support oath
+DONE: Not my business - Niyi Osundere
+DONE: Europa warning
+40k thought for the day
+amarr scriptures
+nightvale weather
 
 
-image library:
+## image library:
 bill cipher
 who's that pokemon
 
 
-ascii art library:
+## ascii art library:
 dragon
 deer
 xerneas
 
 
-stream:
+## stream:
 twitter?
