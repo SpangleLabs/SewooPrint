@@ -1,6 +1,6 @@
 import win32print
 
-from document import Document
+from document import TextDocument
 
 
 class PrinterRepo:
@@ -17,7 +17,7 @@ class PrinterRepo:
         return printer_list
 
     def print_document(self, document):
-        raw_data = document.encoded + b'\n\n\n\n\n\n\x1d\x56\x01\n'
+        raw_data = document.cut_if_uncut().get_encoded()
         printer = win32print.OpenPrinter(self.default_printer())
         win32print.StartDocPrinter(printer, 1, ('CASHDRAWERPRINT', None, None))
         win32print.WritePrinter(printer, raw_data)
@@ -168,7 +168,7 @@ class PrinterRepo:
         return gap.join(column_out) + b'\n'
 
     def test_print(self):
-        document = Document().add_text("normal text").nl() \
+        document = TextDocument().add_text("normal text").nl() \
             .add_bold_text("bold text").nl()\
             .add_invert_text("invert text").nl()\
             .add_underlined_text("underline").nl()

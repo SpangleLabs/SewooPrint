@@ -1,3 +1,6 @@
+from abc import ABC
+
+
 def _try_encode(text):
     """Tries to encode string to bytes, unless it is already bytes."""
     try:
@@ -9,18 +12,37 @@ def _try_encode(text):
 
 def _center_text(text):
     """Centres text on the page."""
-    spacing_left = (Document.MAX_LINE_LEN - len(text)) // 2
-    spacing_right = Document.MAX_LINE_LEN - len(text) - spacing_left
+    spacing_left = (TextDocument.MAX_LINE_LEN - len(text)) // 2
+    spacing_right = TextDocument.MAX_LINE_LEN - len(text) - spacing_left
     centre_text = ' ' * spacing_left + text + ' ' * spacing_right
     return centre_text
 
 
-class Document:
-    MAX_LINE_LEN = 42
+class Document(ABC):
 
     def __init__(self):
         self.encoded = b""
         self.has_cut = False
+
+    def get_encoded(self):
+        return self.encoded
+
+    def cut(self):
+        self.encoded += b'\n\n\n\n\n\n\x1d\x56\x01\n'
+        self.has_cut = True
+        return self
+
+    def cut_if_uncut(self):
+        if not self.has_cut:
+            self.cut()
+        return self
+
+
+class TextDocument(Document):
+    MAX_LINE_LEN = 42
+
+    def __init__(self):
+        super().__init__()
 
     def add_line_wrapped_text(self, text):
         """
@@ -75,14 +97,4 @@ class Document:
 
     def add_text_with_control_code(self, text, control_code):
         self.encoded += b'\x1b\x21' + chr(control_code).encode() + text.encode() + b'\x1b\x21\x00\n'
-        return self
-
-    def cut(self):
-        self.encoded += b'\n\n\n\n\n\n\x1d\x56\x01\n'
-        self.has_cut = True
-        return self
-
-    def cut_if_uncut(self):
-        if not self.has_cut:
-            self.cut()
         return self

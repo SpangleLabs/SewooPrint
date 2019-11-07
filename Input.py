@@ -1,6 +1,6 @@
 from image import GreyScaleImage, SilhouetteImage
 from printer_repo import PrinterRepo
-from document import Document
+from document import TextDocument
 
 
 # noinspection PyMethodMayBeStatic
@@ -102,7 +102,7 @@ class Input(object):
         output += "I am the password reset that guards the logins of men. "
         output += "I pledge my life and honor to the Help Desk's Watch, "
         output += "for this night and all the nights to come."
-        document = Document().add_title("Tech support oath")
+        document = TextDocument().add_title("Tech support oath")
         document.add_line_wrapped_text(output)
         return document
 
@@ -136,7 +136,7 @@ class Input(object):
         poem += "A knock on the door froze my hungry hand.\n"
         poem += "The jeep was waiting on my bewildered lawn\n"
         poem += "Waiting, waiting in its usual silence."
-        document = Document().add_title("Not My Business")
+        document = TextDocument().add_title("Not My Business")
         document.add_title("by Niyi Osundere")
         document.add_line_wrapped_text(poem)
         return document
@@ -145,7 +145,7 @@ class Input(object):
         """
         Outputs HAL9000's warning from the end of 2010:Odyssey Two
         """
-        document = Document()\
+        document = TextDocument()\
             .add_bold_centered_text("ALL THESE WORLDS ARE YOURS-EXCEPT EUROPA").nl()\
             .add_bold_centered_text("ATTEMPT NO LANDING THERE")
         return document

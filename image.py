@@ -1,16 +1,21 @@
 import math
-from abc import ABC, abstractmethod
+from abc import abstractmethod, ABC
 
 from PIL import Image
 
+from document import Document
 
-class ImageDocument(ABC):
+
+class ImageDocument(Document, ABC):
 
     def __init__(self, file_name):
+        super().__init__()
+        # Load, then resize image
         self.image = Image.open(file_name).convert('RGBA')
         self.width, self.height = self.image.size
         self._resize_image()
 
+        # Encode image
         self.encoded = b'\x1d\x2a'
         self.encoded += bytes([self.width // 8, self.height // 8])
         pix_num = 0
