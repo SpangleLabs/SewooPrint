@@ -152,7 +152,7 @@ class TextDocument(Document):
         return self
 
     def add_number(self, number):
-        text = str(num)
+        text = str(number)
         if "." in text:
             text = text.rstrip("0.")
         text_encode = _try_encode(text)
