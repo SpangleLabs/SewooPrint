@@ -99,7 +99,7 @@ class TextDocument(Document):
         self.encoded += b'\x1b\x21' + chr(control_code).encode() + text.encode() + b'\x1b\x21\x00\n'
         return self
 
-    def add_text_rotated_sideays(self, text):
+    def add_text_rotated_sideways(self, text):
         text_encode = _try_encode(text)
         self.encoded += b'\x1b\x56\x01' + text_encode + b'\x1b\x56\x00'
         return self
@@ -124,3 +124,38 @@ class TextDocument(Document):
         text_encode = _try_encode(text)
         self.encoded += b'\x1b\x21\x09' + text_encode + b'\x1b\x21\x00'
         return self
+
+    def add_dashed_line(self):
+        self.encoded += _try_encode("-" * TextDocument.MAX_LINE_LEN)
+        return self
+
+    def add_left_right_text(
+            self, left_text, right_text, width=None,
+            left_bold=False, right_bold=False
+    ):
+        left_text = _try_encode(left_text)
+        right_text = _try_encode(right_text)
+        if width is None:
+            width = TextDocument.MAX_LINE_LEN
+        spacing = width - len(left_text + right_text)
+        if left_bold:
+            left_text = b'\x1b\x21\x08' + left_text + b'\x1b\x21\x00'
+        if right_bold:
+            right_text = b'\x1b\x21\x08' + right_text + b'\x1b\x21\x00'
+        self.encoded += left_text + b' ' * spacing + right_text
+        return self
+
+    def add_price(self, price):
+        text = "%.2f" % price
+        text_encode = b'\x9c' + _try_encode(text)
+        self.encoded += text_encode
+        return self
+
+    def add_number(self, number):
+        text = str(num)
+        if "." in text:
+            text = text.rstrip("0.")
+        text_encode = _try_encode(text)
+        self.encoded += text_encode
+        return self
+

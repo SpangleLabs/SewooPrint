@@ -37,43 +37,6 @@ class PrinterRepo:
         self.print_raw(text_encode)
         return text_encode
 
-    def amount_string(self, amount):
-        return b'\x9c' + ("%.2f" % amount).encode()
-
-    def num_string(self, num):
-        return str(num).rstrip('0').rstrip('.').encode() if '.' in str(num) else str(num).encode()
-
-    def left_right(self, left_text, right_text, width, bold=None):
-        if bold is None:
-            bold = []
-        try:
-            left_text = left_text.encode()
-        except AttributeError:
-            pass
-        try:
-            right_text = right_text.encode()
-        except AttributeError:
-            pass
-        spacing = width - len(left_text + right_text)
-        if 'left' in bold:
-            left_text = PrinterRepo.bold(left_text)
-        if 'right' in bold:
-            right_text = PrinterRepo.bold(right_text)
-        return left_text + b' ' * spacing + right_text
-
-    def right(self, text, width, bold=False):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        spacing = width - len(text)
-        if bold:
-            text = PrinterRepo.bold(text)
-        return b' ' * spacing + text
-
-    def dash_line(self):
-        return ('-' * 42).encode()
-
     def columns(self, column_spec, column_data, gap=' ', spacer=' '):
         if len(column_spec) != len(column_data):
             return False
