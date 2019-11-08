@@ -37,49 +37,6 @@ class PrinterRepo:
         self.print_raw(text_encode)
         return text_encode
 
-    def columns(self, column_spec, column_data, gap=' ', spacer=' '):
-        if len(column_spec) != len(column_data):
-            return False
-        if len([col for col in column_spec if col['width'] == 'fill']) > 1:
-            return False
-        if len(spacer) != 1:
-            return False
-        spacer = spacer.encode()
-        gap = gap.encode()
-        column_specc = []
-        for col in column_spec:
-            if col['width'] == 'fill':
-                rest_of_width = sum(
-                    [col['width'] for col in column_spec if col['width'] != 'fill']) + (
-                                          len(gap) * (len(column_spec) - 1))
-                print(rest_of_width)
-                col['width'] = 42 - rest_of_width
-            column_specc.append(col)
-        column_spec = column_specc
-        total_width = sum([col['width'] for col in column_spec]) + (len(gap) * (len(column_spec) - 1))
-        if total_width > 42:
-            return False
-        column_out = []
-        for (col_spec, col_data) in zip(column_spec, column_data):
-            try:
-                col_data['text'] = col_data['text'].encode()
-            except AttributeError:
-                pass
-            if col_spec['align'] == 'left':
-                col_out = col_data['text'][:col_spec['width']]
-                colwidth = len(col_out)
-                if 'func' in col_data:
-                    col_out = col_data['func'](col_out)
-                col_out = col_out + spacer * (col_spec['width'] - colwidth)
-            else:
-                col_out = col_data['text'][::-1][:col_spec['width']][::-1]
-                colwidth = len(col_out)
-                if 'func' in col_data:
-                    col_out = col_data['func'](col_out)
-                col_out = spacer * (col_spec['width'] - colwidth) + col_out
-            column_out.append(col_out)
-        return gap.join(column_out) + b'\n'
-
     def test_print(self):
         document = TextDocument().add_text("normal text").nl() \
             .add_bold_text("bold text").nl()\

@@ -1,4 +1,5 @@
 from abc import ABC
+from enum import Enum
 
 
 def _try_encode(text):
@@ -159,3 +160,42 @@ class TextDocument(Document):
         self.encoded += text_encode
         return self
 
+    def add_columns(self, column_spec, column_text):
+        first = True
+        for (spec, text) in zip(column_spec.columns, column_text):
+            if not first:
+                self.add_text(" ")
+            first = False
+            if spec.align == ColumnAlign.left:
+                text = text[:spec.width].ljust(spec.width)
+                self.add_text(text)
+            else:
+                text = text[-spec.width:].rjust(spec.width)
+                self.add_text(text)
+        self.nl()
+
+
+class ColumnsSpec:
+
+    def __init__(self, columns):
+        fill_columns = [x for x in columns if x.width is None]
+        if len(fill_columns) > 1:
+            raise ValueError("Can't have more than 1 column width set to None")
+        if len(fill_columns) == 1:
+            fixed_width_total = \
+                sum([x.width for x in columns if x.width is not None]) + len(columns) - 1
+            remaining_width = TextDocument.MAX_LINE_LEN - fixed_width_total
+            fill_columns[0].width = remaining_width
+        self.columns = columns
+
+
+class ColumnAlign(Enum):
+    left = 1
+    right = 2
+
+
+class ColumnSpec:
+
+    def __init__(self, width, align):
+        self.width = width
+        self.align = align
