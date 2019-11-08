@@ -166,12 +166,16 @@ class TextDocument(Document):
             if not first:
                 self.add_text(" ")
             first = False
+            add_func = self.add_text
+            if isinstance(text, tuple):
+                add_func = text[1]
+                text = text[0]
             if spec.align == ColumnAlign.left:
                 text = text[:spec.width].ljust(spec.width)
-                self.add_text(text)
+                add_func(text)
             else:
                 text = text[-spec.width:].rjust(spec.width)
-                self.add_text(text)
+                add_func(text)
         self.nl()
 
 
