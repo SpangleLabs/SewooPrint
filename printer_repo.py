@@ -1,6 +1,6 @@
 import win32print
 
-from document import TextDocument
+from document import TextDocument, ColumnsSpec, ColumnSpec, ColumnAlign
 
 
 class PrinterRepo:
@@ -48,88 +48,65 @@ class PrinterRepo:
         self.print_document(document)
 
     def print_order(self, company_name, order_data, printer):
-        raw_data = PrinterRepo.title(company_name) + b'\n'
-        date_format = str(order_data['Open_Date'].day).zfill(2) + '/' + str(
-            order_data['Open_Date'].month).zfill(2) + ' ' + str(order_data['Open_Date'].hour).zfill(
-            2) + ':' + str(order_data['Open_Date'].minute).zfill(2)
-        raw_data += PrinterRepo.bold('Order placed:') + b' ' + date_format.encode() + b'\n'
-        hour_print = order_data['DeliveryTime']['Hour']
-        if order_data['DeliveryTime']['Meridiem'] == 'PM':
-            hour_print = str(int(order_data['DeliveryTime']['Hour']) + 12)
-        if order_data['DeliveryTime']['Hour'] == 'ASAP':
-            raw_data += PrinterRepo.bold('Time wanted:') + b' ' + hour_print.encode() + b'\n'
-        else:
-            raw_data += PrinterRepo.bold('Time wanted:') + b' ' + (
-                    hour_print + ':' + order_data['DeliveryTime']['Minute']).encode() + b'\n'
-        raw_data += PrinterRepo.bold('Customer: ' + order_data['Customer']) + b'\n'
-        raw_data += PrinterRepo.bold('Number:') + b' ' + (
-            order_data['CustomerData']['Number']).encode() + b'\n'
-        raw_data += ('  ' + order_data['CustomerData']['Street']).encode() + b'\n'
-        raw_data += ('  ' + order_data['CustomerData']['City']).encode() + b'\n'
-        raw_data += ('  ' + order_data['CustomerData']['Postcode']).encode() + b'\n\n'
-        if order_data['Notes'] != '':
-            raw_data += PrinterRepo.bold('Notes:') + b'\n'
-            for line in order_data['Notes'].split('\n'):
-                raw_data += b'  ' + line.encode() + b'\n'
-            raw_data += b'\n'
-        if order_data['Driver'] is not False:
-            raw_data += PrinterRepo.bold('Driver:') + b' ' + order_data['Driver'].encode() + b'\n'
-        #        rawdata += printer.leftright('Items:','Price:',37,['left','right']) + b'\n'
-        delivery_items = []
-        column_spec = [{'width': 3, 'align': 'right'}, {'width': 'fill', 'align': 'left'},
-                      {'width': 6, 'align': 'right'}, {'width': 6, 'align': 'right'}]
-        raw_data += b'\n' + self.columns(
-            column_spec,
-            [{'text': 'Qty'}, {'text': 'Item'}, {'text': 'Price'}, {'text': 'Total'}]
+        doc = TextDocument().add_title(company_name).nl()
+        # Order date
+        order_date = order_data['Open_Date']
+        date_format = "{:02d}/{:02d} {:02d}:{:02d}".format(
+            order_date.day, order_date.month, order_date.hour, order_date.minute
         )
-        raw_data += self.dash_line()
+        doc.add_bold_text("Order placed: ").add_text(date_format).nl()
+        # Delivery time
+        delivery_time = order_data['DeliveryTime']
+        pm = delivery_time['Hour'] != "ASAP" and delivery_time['Meridiem'] == "PM"
+        delivery_hour = int(delivery_time['Hour']) + 12 if pm else delivery_time['Hour']
+        doc.add_bold_text("Time wanted: ")
+        if delivery_time['Hour'] == "ASAP":
+            doc.add_text("ASAP").nl()
+        else:
+            doc.add_text("{:02d}:{:02d}".format(delivery_hour, delivery_time['Minute'])).nl()
+        doc.add_bold_text("Customer: ").add_text(order_data['Customer']).nl()
+        doc.add_bold_text("Number: ").add_text(order_data['CustomerData']['Number']).nl()
+        doc.add_text("  {}".format(order_data['CustomerData']['Street'])).nl()
+        doc.add_text("  {}".format(order_data['CustomerData']['City'])).nl()
+        doc.add_text("  {}".format(order_data['CustomerData']['Postcode'])).nl()
+        if order_data['Notes']:
+            doc.add_bold_text("Notes:").nl()
+            doc.add_line_wrapped_text(order_data['Notes']).nl()
+        if order_data['Driver']:
+            doc.add_bold_text("Driver: ").add_text(order_data['Driver']).nl()
+        column_spec = ColumnsSpec([
+            ColumnSpec(3, ColumnAlign.right),
+            ColumnSpec(None, ColumnAlign.left),
+            ColumnSpec(6, ColumnAlign.right),
+            ColumnSpec(6, ColumnAlign.right)
+        ])
+        doc.nl()
+        doc.add_columns(column_spec, ["Qty", "Item", "Price", "Total"])
+        doc.add_dashed_line()
+        delivery_items = []
         for item in order_data['Items']:
             if item['Category'][:8] == 'Delivery':
                 delivery_items.append(item)
                 continue
-            col_amount = {'text': self.num_string(item['Amount'])}
-            col_item = {'text': item['Name']}
-            col_unit_price = {'text': self.amount_string(item['Price'])}
-            col_total_price = {
-                'text': self.amount_string(float(item['Price']) * item['Amount']),
-                'func': PrinterRepo.bold
-            }
-            raw_data += self.columns(
+            doc.add_columns(
                 column_spec,
-                [col_amount, col_item, col_unit_price, col_total_price]
+                [
+                    (item['Amount'], doc.add_number),
+                    item['Name'],
+                    (item['Price'], doc.add_price),
+                    (float(item['Price']) * item['Amount'], doc.add_price)
+                ]
             )
-            if item['Additional_Text'] != '':
-                raw_data += b'      ' + item['Additional_Text'].encode() + b'\n'
-        #            if(item['Additional_Text']!=''):
-        #                if(item['Amount']!=1):
-        #                    rawdata += printer.leftright(item['Name'],printer.amountstring(item['Price']),37) + b' ' + printer.numstring(item['Amount']) + b'\n'
-        #                    rawdata += printer.leftright(b'  '+item['Additional_Text'].encode(),printer.amountstring(float(item['Price'])*item['Amount']),37,['right']) + b'\n'
-        #                else:
-        #                    rawdata += printer.leftright(item['Name'],printer.amountstring(item['Price']),37,['right']) + b'\n'
-        #                    rawdata += b'  ' + item['Additional_Text'].encode() + b'\n'
-        #            else:
-        #                if(item['Amount']!=1):
-        #                    rawdata += printer.leftright(item['Name'],printer.amountstring(item['Price']),37) + b' ' + printer.numstring(item['Amount']) + b'\n'
-        #                    rawdata += printer.leftright('',printer.amountstring(float(item['Price'])*item['Amount']),37,['right']) + b'\n'
-        #                else:
-        #                    rawdata += printer.leftright(item['Name'],printer.amountstring(item['Price']),37,['right']) + b'\n'
+            if item['Additional_Text']:
+                doc.add_text("      {}".format(item['Additional_Text'])).nl()
         if len(delivery_items) != 0:
-            raw_data += self.dash_line()
+            doc.add_dashed_line()
         for item in delivery_items:
-            raw_data += self.left_right(
-                item['Name'], self.amount_string(item['Price']), 42,
-                ['right']) + b'\n'
+            doc.add_left_right_text(item['Name'], item['Price'], right_func=doc.add_price)
             if item['Additional_Text'] != '':
-                raw_data += b'  ' + item['Additional_Text'].encode() + b'\n'
-        raw_data += self.dash_line()
-        raw_data += self.right(
-            'Total: '.encode() + self.amount_string(order_data['Total']), 42,
-            True
+                doc.add_text("      {}".format(item['Additional_Text'])).nl()
+        doc.add_dashed_line()
+        doc.add_left_right_text(
+            "Total:", order_data['Total'], left_func=doc.add_bold_text, right_func=doc.add_price
         )
-        raw_data += b'\n\n\n\n\n\n\x1d\x56\x01' + b'\n'
-        printer = win32print.OpenPrinter(printer)
-        win32print.StartDocPrinter(printer, 1, ('CASHDRAWERPRINT', None, None))
-        win32print.WritePrinter(printer, raw_data)
-        win32print.EndDocPrinter(printer)
-        win32print.ClosePrinter(printer)
-        return bytes
+        self.print_document(doc)
