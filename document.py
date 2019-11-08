@@ -132,18 +132,19 @@ class TextDocument(Document):
 
     def add_left_right_text(
             self, left_text, right_text, width=None,
-            left_bold=False, right_bold=False
+            left_func=False, right_func=False
     ):
-        left_text = _try_encode(left_text)
-        right_text = _try_encode(right_text)
         if width is None:
             width = TextDocument.MAX_LINE_LEN
         spacing = width - len(left_text + right_text)
-        if left_bold:
-            left_text = b'\x1b\x21\x08' + left_text + b'\x1b\x21\x00'
-        if right_bold:
-            right_text = b'\x1b\x21\x08' + right_text + b'\x1b\x21\x00'
-        self.encoded += left_text + b' ' * spacing + right_text
+        if not left_func:
+            left_func = self.add_text
+        if not right_func:
+            right_func = self.add_text
+        left_func(left_text)
+        self.add_text(" " * spacing)
+        right_func(right_text)
+        self.nl()
         return self
 
     def add_price(self, price):
