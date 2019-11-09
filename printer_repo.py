@@ -1,6 +1,6 @@
 import win32print
 
-from document import Document
+from document import TextDocument, ColumnsSpec, ColumnSpec, ColumnAlign
 
 
 class PrinterRepo:
@@ -17,7 +17,7 @@ class PrinterRepo:
         return printer_list
 
     def print_document(self, document):
-        raw_data = document.encoded + b'\n\n\n\n\n\n\x1d\x56\x01\n'
+        raw_data = document.cut_if_uncut().get_encoded()
         printer = win32print.OpenPrinter(self.default_printer())
         win32print.StartDocPrinter(printer, 1, ('CASHDRAWERPRINT', None, None))
         win32print.WritePrinter(printer, raw_data)
@@ -37,140 +37,10 @@ class PrinterRepo:
         self.print_raw(text_encode)
         return text_encode
 
-    def invert(self, text):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        return b'\x1d\x42\x01' + text + b'\x1d\x42\x00'
-
-    def underline(self, text):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        return b'\x1b\x2d\x01' + text + b'\x1b\x2d\x00'
-
-    def rotate90_degrees(self, text):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        return b'\x1b\x56\x01' + text + b'\x1b\x56\x00'
-
-    def upside_down(self, text):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        return b'\x1b\x7b\x01' + text + b'\x1b\x7b\x00'
-
-    def stretch(self, text, amount=2):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        amount = min(amount, 8)
-        return b'\x1d\x21' + chr(amount - 1).encode() + text + b'\x1d\x21\x00'
-
-    def tiny_text(self, text):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        return b'\x1b\x21\x01' + text + b'\x1b\x21\x00'
-
-    def tiny_text_bold(self, text):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        return b'\x1b\x21\x09' + text + b'\x1b\x21\x00'
-
-    def amount_string(self, amount):
-        return b'\x9c' + ("%.2f" % amount).encode()
-
-    def num_string(self, num):
-        return str(num).rstrip('0').rstrip('.').encode() if '.' in str(num) else str(num).encode()
-
-    def left_right(self, left_text, right_text, width, bold=None):
-        if bold is None:
-            bold = []
-        try:
-            left_text = left_text.encode()
-        except AttributeError:
-            pass
-        try:
-            right_text = right_text.encode()
-        except AttributeError:
-            pass
-        spacing = width - len(left_text + right_text)
-        if 'left' in bold:
-            left_text = PrinterRepo.bold(left_text)
-        if 'right' in bold:
-            right_text = PrinterRepo.bold(right_text)
-        return left_text + b' ' * spacing + right_text
-
-    def right(self, text, width, bold=False):
-        try:
-            text = text.encode()
-        except AttributeError:
-            pass
-        spacing = width - len(text)
-        if bold:
-            text = PrinterRepo.bold(text)
-        return b' ' * spacing + text
-
-    def dash_line(self):
-        return ('-' * 42).encode()
-
-    def columns(self, column_spec, column_data, gap=' ', spacer=' '):
-        if len(column_spec) != len(column_data):
-            return False
-        if len([col for col in column_spec if col['width'] == 'fill']) > 1:
-            return False
-        if len(spacer) != 1:
-            return False
-        spacer = spacer.encode()
-        gap = gap.encode()
-        column_specc = []
-        for col in column_spec:
-            if col['width'] == 'fill':
-                rest_of_width = sum(
-                    [col['width'] for col in column_spec if col['width'] != 'fill']) + (
-                                          len(gap) * (len(column_spec) - 1))
-                print(rest_of_width)
-                col['width'] = 42 - rest_of_width
-            column_specc.append(col)
-        column_spec = column_specc
-        total_width = sum([col['width'] for col in column_spec]) + (len(gap) * (len(column_spec) - 1))
-        if total_width > 42:
-            return False
-        column_out = []
-        for (col_spec, col_data) in zip(column_spec, column_data):
-            try:
-                col_data['text'] = col_data['text'].encode()
-            except AttributeError:
-                pass
-            if col_spec['align'] == 'left':
-                col_out = col_data['text'][:col_spec['width']]
-                colwidth = len(col_out)
-                if 'func' in col_data:
-                    col_out = col_data['func'](col_out)
-                col_out = col_out + spacer * (col_spec['width'] - colwidth)
-            else:
-                col_out = col_data['text'][::-1][:col_spec['width']][::-1]
-                colwidth = len(col_out)
-                if 'func' in col_data:
-                    col_out = col_data['func'](col_out)
-                col_out = spacer * (col_spec['width'] - colwidth) + col_out
-            column_out.append(col_out)
-        return gap.join(column_out) + b'\n'
-
     def test_print(self):
-        document = Document().add_text("normal text").nl() \
+        document = TextDocument().add_text("normal text").nl() \
             .add_bold_text("bold text").nl()\
-            .add_invert_text("invert text").nl()\
+            .add_invert_colours_text("invert text").nl()\
             .add_underlined_text("underline").nl()
         for num in range(256):
             document.add_text_with_control_code("test #"+str(num), num).nl()
@@ -178,88 +48,65 @@ class PrinterRepo:
         self.print_document(document)
 
     def print_order(self, company_name, order_data, printer):
-        raw_data = PrinterRepo.title(company_name) + b'\n'
-        date_format = str(order_data['Open_Date'].day).zfill(2) + '/' + str(
-            order_data['Open_Date'].month).zfill(2) + ' ' + str(order_data['Open_Date'].hour).zfill(
-            2) + ':' + str(order_data['Open_Date'].minute).zfill(2)
-        raw_data += PrinterRepo.bold('Order placed:') + b' ' + date_format.encode() + b'\n'
-        hour_print = order_data['DeliveryTime']['Hour']
-        if order_data['DeliveryTime']['Meridiem'] == 'PM':
-            hour_print = str(int(order_data['DeliveryTime']['Hour']) + 12)
-        if order_data['DeliveryTime']['Hour'] == 'ASAP':
-            raw_data += PrinterRepo.bold('Time wanted:') + b' ' + hour_print.encode() + b'\n'
-        else:
-            raw_data += PrinterRepo.bold('Time wanted:') + b' ' + (
-                    hour_print + ':' + order_data['DeliveryTime']['Minute']).encode() + b'\n'
-        raw_data += PrinterRepo.bold('Customer: ' + order_data['Customer']) + b'\n'
-        raw_data += PrinterRepo.bold('Number:') + b' ' + (
-            order_data['CustomerData']['Number']).encode() + b'\n'
-        raw_data += ('  ' + order_data['CustomerData']['Street']).encode() + b'\n'
-        raw_data += ('  ' + order_data['CustomerData']['City']).encode() + b'\n'
-        raw_data += ('  ' + order_data['CustomerData']['Postcode']).encode() + b'\n\n'
-        if order_data['Notes'] != '':
-            raw_data += PrinterRepo.bold('Notes:') + b'\n'
-            for line in order_data['Notes'].split('\n'):
-                raw_data += b'  ' + line.encode() + b'\n'
-            raw_data += b'\n'
-        if order_data['Driver'] is not False:
-            raw_data += PrinterRepo.bold('Driver:') + b' ' + order_data['Driver'].encode() + b'\n'
-        #        rawdata += printer.leftright('Items:','Price:',37,['left','right']) + b'\n'
-        delivery_items = []
-        column_spec = [{'width': 3, 'align': 'right'}, {'width': 'fill', 'align': 'left'},
-                      {'width': 6, 'align': 'right'}, {'width': 6, 'align': 'right'}]
-        raw_data += b'\n' + self.columns(
-            column_spec,
-            [{'text': 'Qty'}, {'text': 'Item'}, {'text': 'Price'}, {'text': 'Total'}]
+        doc = TextDocument().add_title(company_name).nl()
+        # Order date
+        order_date = order_data['Open_Date']
+        date_format = "{:02d}/{:02d} {:02d}:{:02d}".format(
+            order_date.day, order_date.month, order_date.hour, order_date.minute
         )
-        raw_data += self.dash_line()
+        doc.add_bold_text("Order placed: ").add_text(date_format).nl()
+        # Delivery time
+        delivery_time = order_data['DeliveryTime']
+        pm = delivery_time['Hour'] != "ASAP" and delivery_time['Meridiem'] == "PM"
+        delivery_hour = int(delivery_time['Hour']) + 12 if pm else delivery_time['Hour']
+        doc.add_bold_text("Time wanted: ")
+        if delivery_time['Hour'] == "ASAP":
+            doc.add_text("ASAP").nl()
+        else:
+            doc.add_text("{:02d}:{:02d}".format(delivery_hour, delivery_time['Minute'])).nl()
+        doc.add_bold_text("Customer: ").add_text(order_data['Customer']).nl()
+        doc.add_bold_text("Number: ").add_text(order_data['CustomerData']['Number']).nl()
+        doc.add_text("  {}".format(order_data['CustomerData']['Street'])).nl()
+        doc.add_text("  {}".format(order_data['CustomerData']['City'])).nl()
+        doc.add_text("  {}".format(order_data['CustomerData']['Postcode'])).nl()
+        if order_data['Notes']:
+            doc.add_bold_text("Notes:").nl()
+            doc.add_line_wrapped_text(order_data['Notes']).nl()
+        if order_data['Driver']:
+            doc.add_bold_text("Driver: ").add_text(order_data['Driver']).nl()
+        column_spec = ColumnsSpec([
+            ColumnSpec(3, ColumnAlign.right),
+            ColumnSpec(None, ColumnAlign.left),
+            ColumnSpec(6, ColumnAlign.right),
+            ColumnSpec(6, ColumnAlign.right)
+        ])
+        doc.nl()
+        doc.add_columns(column_spec, ["Qty", "Item", "Price", "Total"])
+        doc.add_dashed_line()
+        delivery_items = []
         for item in order_data['Items']:
             if item['Category'][:8] == 'Delivery':
                 delivery_items.append(item)
                 continue
-            col_amount = {'text': self.num_string(item['Amount'])}
-            col_item = {'text': item['Name']}
-            col_unit_price = {'text': self.amount_string(item['Price'])}
-            col_total_price = {
-                'text': self.amount_string(float(item['Price']) * item['Amount']),
-                'func': PrinterRepo.bold
-            }
-            raw_data += self.columns(
+            doc.add_columns(
                 column_spec,
-                [col_amount, col_item, col_unit_price, col_total_price]
+                [
+                    (item['Amount'], doc.add_number),
+                    item['Name'],
+                    (item['Price'], doc.add_price),
+                    (float(item['Price']) * item['Amount'], doc.add_price)
+                ]
             )
-            if item['Additional_Text'] != '':
-                raw_data += b'      ' + item['Additional_Text'].encode() + b'\n'
-        #            if(item['Additional_Text']!=''):
-        #                if(item['Amount']!=1):
-        #                    rawdata += printer.leftright(item['Name'],printer.amountstring(item['Price']),37) + b' ' + printer.numstring(item['Amount']) + b'\n'
-        #                    rawdata += printer.leftright(b'  '+item['Additional_Text'].encode(),printer.amountstring(float(item['Price'])*item['Amount']),37,['right']) + b'\n'
-        #                else:
-        #                    rawdata += printer.leftright(item['Name'],printer.amountstring(item['Price']),37,['right']) + b'\n'
-        #                    rawdata += b'  ' + item['Additional_Text'].encode() + b'\n'
-        #            else:
-        #                if(item['Amount']!=1):
-        #                    rawdata += printer.leftright(item['Name'],printer.amountstring(item['Price']),37) + b' ' + printer.numstring(item['Amount']) + b'\n'
-        #                    rawdata += printer.leftright('',printer.amountstring(float(item['Price'])*item['Amount']),37,['right']) + b'\n'
-        #                else:
-        #                    rawdata += printer.leftright(item['Name'],printer.amountstring(item['Price']),37,['right']) + b'\n'
+            if item['Additional_Text']:
+                doc.add_text("      {}".format(item['Additional_Text'])).nl()
         if len(delivery_items) != 0:
-            raw_data += self.dash_line()
+            doc.add_dashed_line()
         for item in delivery_items:
-            raw_data += self.left_right(
-                item['Name'], self.amount_string(item['Price']), 42,
-                ['right']) + b'\n'
+            doc.add_left_right_text(item['Name'], item['Price'], right_func=doc.add_price)
             if item['Additional_Text'] != '':
-                raw_data += b'  ' + item['Additional_Text'].encode() + b'\n'
-        raw_data += self.dash_line()
-        raw_data += self.right(
-            'Total: '.encode() + self.amount_string(order_data['Total']), 42,
-            True
+                doc.add_text("      {}".format(item['Additional_Text'])).nl()
+        doc.add_dashed_line()
+        doc.add_left_right_text(
+            "Total:", order_data['Total'], left_func=doc.add_bold_text, right_func=doc.add_price
         )
-        raw_data += b'\n\n\n\n\n\n\x1d\x56\x01' + b'\n'
-        printer = win32print.OpenPrinter(printer)
-        win32print.StartDocPrinter(printer, 1, ('CASHDRAWERPRINT', None, None))
-        win32print.WritePrinter(printer, raw_data)
-        win32print.EndDocPrinter(printer)
-        win32print.ClosePrinter(printer)
-        return bytes
+        self.print_document(doc)

@@ -1,9 +1,9 @@
-from PIL import Image
-import math
-from Printer import PrinterRepo
-from Formatter import Formatter
+from image import GreyScaleImage, SilhouetteImage
+from printer_repo import PrinterRepo
+from document import TextDocument
 
 
+# noinspection PyMethodMayBeStatic
 class Input(object):
     """
     Stores a bunch of different raw inputs to be used.
@@ -15,14 +15,12 @@ class Input(object):
     TYPE_STREAM = "stream"
 
     mPrinter = None
-    mFormatter = None
 
     def __init__(self):
         """
         Start input choice.
         """
         self.mPrinter = PrinterRepo()
-        self.mFormatter = Formatter()
         input_type = self.choose_input_type()
         if input_type is None:
             print("Invalid input type.")
@@ -71,142 +69,101 @@ class Input(object):
         user_input = input("Please select: ")
         user_input_clean = user_input.lower().strip()
         if user_input_clean in ['tech support oath', 'techsupportoath', 'oath']:
-            oath_output = self.tech_support_oath()
-            self.mPrinter.print_raw(oath_output)
+            oath_document = self.tech_support_oath()
+            self.mPrinter.print_document(oath_document)
             print("Printing complete")
             return
         if user_input_clean in ['not my business', 'notmybusiness']:
-            poem_output = self.not_my_business()
-            self.mPrinter.print_raw(poem_output)
+            poem_document = self.not_my_business()
+            self.mPrinter.print_document(poem_document)
             print("Printing complete")
             return
         if user_input_clean in ['hal9000 warning', 'hal warning', 'hal']:
-            warn_output = self.hal_warning()
-            self.mPrinter.print_raw(warn_output)
+            warn_document = self.hal_warning()
+            self.mPrinter.print_document(warn_document)
             print("Printing complete")
             return
+        print("I don't know that one.")
 
     def tech_support_oath(self):
         """
         Recites the tech support oath.
         Parody of the Night's Watch oath.
         """
-        output = "User issues gather, and now my watch begins. "
-        output += "It shall not end until my death. "
-        output += "I shall take no wife (that I will ever see except on weekends), "
-        output += "hold no lands (because I don't make nearly enough), "
-        output += "father no children (because I will never be home anyway). "
-        output += "I shall receive no thanks and win no glory. "
-        output += "I shall live and die at my desk. "
-        output += "I am the antivirus in the darkness. "
-        output += "I am the coder on the walls. "
-        output += "I am the password reset that guards the logins of men. "
-        output += "I pledge my life and honor to the Help Desk's Watch, "
-        output += "for this night and all the nights to come."
-        print_output = self.mFormatter.title("Tech support oath")
-        print_output += self.mFormatter.multiLine(output)
-        return print_output
+        output = """\
+User issues gather, and now my watch begins.
+It shall not end until my death.
+I shall take no wife (that I will ever see except on weekends),
+hold no lands (because I don't make nearly enough),
+father no children (because I will never be home anyway).
+I shall receive no thanks and win no glory.
+I shall live and die at my desk.
+I am the antivirus in the darkness.
+I am the coder on the walls.
+I am the password reset that guards the logins of men.
+I pledge my life and honor to the Help Desk's Watch,
+for this night and all the nights to come."""
+        document = TextDocument().add_title("Tech support oath")
+        document.add_line_wrapped_text(output)
+        return document
 
     def not_my_business(self):
         """
         Outputs Niyi Osundere's "Not my business"
         """
-        output = self.mFormatter.title("Not My Business")
-        output += self.mFormatter.title("by Niyi Osundere")
-        output += b"They picked Akanni up one morning\n"
-        output += b"Beat him soft like clay\n"
-        output += b"And stuffed him down the belly\n"
-        output += b"Of a waiting jeep.\n"
-        output += b"What business of mine is it\n"
-        output += b"So long they don't take the yam\n"
-        output += b"From my savouring mouth?\n\n"
-        output += b"They came one night\n"
-        output += b"Booted the whole house awake\n"
-        output += b"And dragged Danladi out,\n"
-        output += b"Then off to a lengthy absence.\n"
-        output += b"What business of mine is it\n"
-        output += b"So long they don't take the yam\n"
-        output += b"From my savouring mouth?\n\n"
-        output += b"Chinwe went to work one day\n"
-        output += b"Only to find her job was gone:\n"
-        output += b"No query, no warning, no probe -\n"
-        output += b"Just one neat sack for a stainless record.\n"
-        output += b"What business of mine is it\n"
-        output += b"So long they don't take the yam\n"
-        output += b"From my savouring mouth?\n\n"
-        output += b"And then one evening\n"
-        output += b"As I sat down to eat my yam\n"
-        output += b"A knock on the door froze my hungry hand.\n"
-        output += b"The jeep was waiting on my bewildered lawn\n"
-        output += b"Waiting, waiting in its usual silence."
-        return output
+        poem = """ \
+They picked Akanni up one morning
+Beat him soft like clay
+And stuffed him down the belly
+Of a waiting jeep.
+What business of mine is it
+So long they don't take the yam
+From my savouring mouth?
+        
+They came one night
+Booted the whole house awake
+And dragged Danladi out,
+Then off to a lengthy absence.
+What business of mine is it
+So long they don't take the yam
+From my savouring mouth?
+
+Chinwe went to work one day
+Only to find her job was gone:
+No query, no warning, no probe -
+Just one neat sack for a stainless record.
+What business of mine is it
+So long they don't take the yam
+From my savouring mouth?
+
+And then one evening
+As I sat down to eat my yam
+A knock on the door froze my hungry hand.
+The jeep was waiting on my bewildered lawn
+Waiting, waiting in its usual silence."""
+        document = TextDocument().add_title("Not My Business")
+        document.add_title("by Niyi Osundere")
+        document.add_line_wrapped_text(poem)
+        return document
 
     def hal_warning(self):
         """
         Outputs HAL9000's warning from the end of 2010:Odyssey Two
         """
-        output = self.mFormatter.bold(
-            self.mFormatter.centreText("ALL THESE WORLDS ARE YOURS-EXCEPT EUROPA"))
-        output += b"\n"
-        output += self.mFormatter.bold(self.mFormatter.centreText("ATTEMPT NO LANDING THERE"))
-        return output
+        document = TextDocument()\
+            .add_bold_centered_text("ALL THESE WORLDS ARE YOURS-EXCEPT EUROPA").nl()\
+            .add_bold_centered_text("ATTEMPT NO LANDING THERE")
+        return document
 
     @staticmethod
     def load_image_file(file_name):
-        image = Image.open(file_name).convert('RGBA')
-        width, height = image.size
-        new_width = 400
-        scale_factor = width / new_width
-        new_height = height // scale_factor
-        end_width = math.ceil(new_width / 8) * 8
-        end_height = math.ceil(new_height / 8) * 8
-        image = image.resize((end_width, end_height), Image.ANTIALIAS)
-
-        image_string = b'\x1d\x2a'
-        image_string += bytes([end_width // 8, end_height // 8])
-        pix_num = 0
-        pix_val = 0
-        for x in range(end_width):
-            for y in range(end_height):
-                r, g, b, a = image.getpixel((x, y))
-                if r * g * b < 100 * 100 * 100 and a > 50:
-                    pix_val += 2 ** (7 - pix_num)
-                if pix_num == 7:
-                    image_string += bytes([pix_val])
-                    pix_num = 0
-                    pix_val = 0
-                else:
-                    pix_num += 1
-        return image_string + b'\x1d\x2f\x00'
+        document = GreyScaleImage(file_name)
+        return document.encoded
 
     @staticmethod
     def load_image_silhouette_file(file_name):
-        image = Image.open(file_name).convert('RGBA')
-        width, height = image.size
-        new_width = 400
-        scale_factor = width / new_width
-        new_height = height // scale_factor
-        end_width = math.ceil(new_width / 8) * 8
-        end_height = math.ceil(new_height / 8) * 8
-        image = image.resize((end_width, end_height), Image.ANTIALIAS)
-
-        image_string = b'\x1d\x2a'
-        image_string += bytes([end_width // 8, end_height // 8])
-        pix_num = 0
-        pix_val = 0
-        for x in range(end_width):
-            for y in range(end_height):
-                _, _, _, a = image.getpixel((x, y))
-                if a > 10:
-                    pix_val += 2 ** (7 - pix_num)
-                if pix_num == 7:
-                    image_string += bytes([pix_val])
-                    pix_num = 0
-                    pix_val = 0
-                else:
-                    pix_num += 1
-        image_string += b'\x1d\x2f\x00'
-        return image_string
+        document = SilhouetteImage(file_name)
+        return document.encoded
 
 
 if __name__ == "__main__":
