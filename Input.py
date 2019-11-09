@@ -36,7 +36,8 @@ class Input(object):
             return
         if input_type == self.TYPE_IMAGE:
             print("Image input type selected.")
-            # TODO: Handle image type input.
+            # Handle image type input.
+            self.choose_image_input()
             return
         if input_type == self.TYPE_STREAM:
             print("Stream input type selected.")
