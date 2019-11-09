@@ -178,12 +178,12 @@ Waiting, waiting in its usual silence."""
     @staticmethod
     def load_image_file(file_name):
         document = GreyScaleImage(file_name)
-        return document.encoded
+        return document
 
     @staticmethod
     def load_image_silhouette_file(file_name):
         document = SilhouetteImage(file_name)
-        return document.encoded
+        return document
 
 
 if __name__ == "__main__":
