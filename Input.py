@@ -85,6 +85,25 @@ class Input(object):
             return
         print("I don't know that one.")
 
+    def choose_image_input(self):
+        """chooses an image input"""
+        print("Available image input types: greyscale, silhouette.")
+        user_input = input("Please select: ")
+        user_input_clean = user_input.lower().strip()
+        if user_input_clean in ["greyscale", "grayscale", "grey", "gray"]:
+            filename = input("Please enter filename: ")
+            image_document = self.load_image_file(filename)
+            self.mPrinter.print_document(image_document)
+            print("Printing complete")
+            return
+        if user_input_clean in ["silhouette"]:
+            filename = input("Please enter filename: ")
+            image_document = self.load_image_silhouette_file(filename)
+            self.mPrinter.print_document(image_document)
+            print("Printing complete")
+            return
+        print("I don't know that one.")
+
     def tech_support_oath(self):
         """
         Recites the tech support oath.
