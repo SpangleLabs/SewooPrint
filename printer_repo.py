@@ -1,41 +1,14 @@
-import win32print
-
 from document import TextDocument, ColumnsSpec, ColumnSpec, ColumnAlign
 
 
 class PrinterRepo:
 
     def default_printer(self):
-        return win32print.GetDefaultPrinter()
-
-    def list_printers(self):
-        printer_list = [item[2] for item in win32print.EnumPrinters(2)]
-        black_list = ['Fax', 'Send To OneNote 2013', 'Microsoft XPS Document Writer']
-        for item in black_list:
-            if item in printer_list:
-                printer_list.remove(item)
-        return printer_list
-
-    def print_document(self, document):
-        raw_data = document.cut_if_uncut().get_encoded()
-        printer = win32print.OpenPrinter(self.default_printer())
-        win32print.StartDocPrinter(printer, 1, ('CASHDRAWERPRINT', None, None))
-        win32print.WritePrinter(printer, raw_data)
-        win32print.EndDocPrinter(printer)
-        win32print.ClosePrinter(printer)
-
-    def print_raw(self, raw_data):
-        raw_data += b'\n\n\n\n\n\n\x1d\x56\x01' + b'\n'
-        printer = win32print.OpenPrinter(self.default_printer())
-        win32print.StartDocPrinter(printer, 1, ('CASHDRAWERPRINT', None, None))
-        win32print.WritePrinter(printer, raw_data)
-        win32print.EndDocPrinter(printer)
-        win32print.ClosePrinter(printer)
-
-    def print_text(self, text):
-        text_encode = text.encode().replace(b'\xc2\xa3', b'\x9c')
-        self.print_raw(text_encode)
-        return text_encode
+        try:
+            import printer_win.WindowsPrinter as Printer
+        except ImportError:
+            import printer_linux.LinuxPrinter as Printer
+        return Printer()
 
     def test_print(self):
         document = TextDocument().add_text("normal text").nl() \
@@ -45,7 +18,7 @@ class PrinterRepo:
         for num in range(256):
             document.add_text_with_control_code("test #"+str(num), num).nl()
         document.add_text("normal")
-        self.print_document(document)
+        self.default_printer().print_document(document)
 
     def print_order(self, company_name, order_data, printer):
         doc = TextDocument().add_title(company_name).nl()
@@ -109,4 +82,4 @@ class PrinterRepo:
         doc.add_left_right_text(
             "Total:", order_data['Total'], left_func=doc.add_bold_text, right_func=doc.add_price
         )
-        self.print_document(doc)
+        self.default_printer().print_document(doc)
