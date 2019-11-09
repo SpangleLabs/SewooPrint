@@ -51,15 +51,16 @@ class TextDocument(Document):
         """
         text_lines = []
         line = ""
-        for word in text.split():
-            temp = line + " " + word
-            temp = temp.strip()
-            if len(temp) > self.MAX_LINE_LEN:
-                text_lines.append(line)
-                line = word
-            else:
-                line = temp
-        text_lines.append(line)
+        for input_line in text.split("\n"):
+            for word in input_line.split():
+                temp = line + " " + word
+                temp = temp.strip()
+                if len(temp) > self.MAX_LINE_LEN:
+                    text_lines.append(line)
+                    line = word
+                else:
+                    line = temp
+            text_lines.append(line)
         self.encoded += _try_encode("\n".join(text_lines))
         return self
 

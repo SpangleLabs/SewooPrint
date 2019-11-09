@@ -78,7 +78,7 @@ class Input(object):
             self.mPrinter.print_document(poem_document)
             print("Printing complete")
             return
-        if user_input_clean in ['hal9000 warning', 'hal warning', 'hal']:
+        if user_input_clean in ['hal9000 warning', 'hal warning', 'hal', 'hal9000']:
             warn_document = self.hal_warning()
             self.mPrinter.print_document(warn_document)
             print("Printing complete")
