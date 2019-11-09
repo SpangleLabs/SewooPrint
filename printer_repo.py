@@ -5,9 +5,9 @@ class PrinterRepo:
 
     def default_printer(self):
         try:
-            import printer_win.WindowsPrinter as Printer
+            from printer_win import WindowsPrinter as Printer
         except ImportError:
-            import printer_linux.LinuxPrinter as Printer
+            from printer_linux import LinuxPrinter as Printer
         return Printer()
 
     def test_print(self):
