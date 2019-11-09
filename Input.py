@@ -20,7 +20,7 @@ class Input(object):
         """
         Start input choice.
         """
-        self.mPrinter = PrinterRepo()
+        self.mPrinter = PrinterRepo().default_printer()
         input_type = self.choose_input_type()
         if input_type is None:
             print("Invalid input type.")
