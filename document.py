@@ -50,8 +50,8 @@ class TextDocument(Document):
         Formats text to be printed over multiple lines, breaking at spaces.
         """
         text_lines = []
-        line = ""
         for input_line in text.split("\n"):
+            line = ""
             for word in input_line.split():
                 temp = line + " " + word
                 temp = temp.strip()
