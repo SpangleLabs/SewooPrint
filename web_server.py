@@ -34,3 +34,7 @@ def print_doc():
         printer.print_document(chores_doc)
         return "Printed chores document"
     return f"Unknown document {doc}"
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8903)
