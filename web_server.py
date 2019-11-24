@@ -24,6 +24,7 @@ def print_doc():
         abort(401)
         return
     doc = data['document'].strip()
+    print(f"Print requested for document: {doc}")
     if doc.startswith("the "):
         doc = doc[4:]
     if doc.startswith("my "):
