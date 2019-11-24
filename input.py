@@ -112,7 +112,7 @@ class Input(object):
             print("Printing complete")
             return
         print("I don't know that one.")
-        
+
     def choose_web_input(self):
         """chooses a web input"""
         print("Available web inputs: chores board.")
@@ -124,7 +124,6 @@ class Input(object):
             print("Printing complete")
             return
         print("I don't know that one.")
-
 
     def tech_support_oath(self):
         """
