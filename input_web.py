@@ -27,7 +27,7 @@ class ChoresBoardDocument(TextDocument):
                     self.add_invert_colours_text("-")
                 else:
                     days = isodate.parse_date(chores_data['today']) - isodate.parse_date(chore['latest_done'])
-                    if days > 60 and chore['recommended_period'] is None:
+                    if days.days > 60 and chore['recommended_period'] is None:
                         self.add_invert_colours_text(chore['latest_done']).nl()
                     else:
                         self.add_text(chore['latest_done']).nl()
