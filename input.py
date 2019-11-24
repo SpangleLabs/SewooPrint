@@ -1,4 +1,5 @@
 from image import GreyScaleImage, SilhouetteImage
+from input_web import ChoresBoardDocument
 from printer_repo import PrinterRepo
 from document import TextDocument
 
@@ -13,6 +14,7 @@ class Input(object):
     TYPE_ASCII = "ascii"
     TYPE_IMAGE = "image"
     TYPE_STREAM = "stream"
+    TYPE_WEB = "web"
 
     mPrinter = None
 
@@ -43,6 +45,10 @@ class Input(object):
             print("Stream input type selected.")
             # TODO: Handle stream type input.
             return
+        if input_type == self.TYPE_WEB:
+            print("Web input type selected.")
+            self.choose_web_input()
+            return
         print("Unknown input type.")
         return
 
@@ -62,6 +68,8 @@ class Input(object):
             return self.TYPE_IMAGE
         if user_input_clean in ['stream', 'feed', 'twitter']:
             return self.TYPE_STREAM
+        if user_input_clean in ['web']:
+            return self.TYPE_WEB
         return None
 
     def choose_text_input(self):
@@ -101,6 +109,18 @@ class Input(object):
             filename = input("Please enter filename: ")
             image_document = self.load_image_silhouette_file(filename)
             self.mPrinter.print_document(image_document)
+            print("Printing complete")
+            return
+        print("I don't know that one.")
+
+    def choose_web_input(self):
+        """chooses a web input"""
+        print("Available web inputs: chores board.")
+        user_input = input("Please select: ")
+        user_input_clean = user_input.lower().strip()
+        if user_input_clean in ['chores board', 'chores', 'choresboard', 'chores list']:
+            chores_document = ChoresBoardDocument()
+            self.mPrinter.print_document(chores_document)
             print("Printing complete")
             return
         print("I don't know that one.")
