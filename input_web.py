@@ -45,4 +45,5 @@ class ChoresBoardDocument(TextDocument):
                 self.add_invert_colours_text(chore['next_date']).nl()
             else:
                 self.add_text(chore['next_date']).nl()
-            self.nl()
+        # Spacing line
+        self.nl()
