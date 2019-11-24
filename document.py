@@ -4,6 +4,8 @@ from enum import Enum
 
 def _try_encode(text):
     """Tries to encode string to bytes, unless it is already bytes."""
+    if isinstance(text, bytes):
+        return text
     try:
         text_encode = str(text).encode().replace(b'\xc2\xa3', b'\x9c')
         return text_encode
