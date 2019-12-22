@@ -24,7 +24,7 @@ def print_doc():
     if 'key' not in data or data['key'] != CONFIG['web_key']:
         abort(401)
         return
-    doc = data['document'].strip()
+    doc = data['document'].strip().lower()
     print(f"Print requested for document: {doc}")
     if doc.startswith("the "):
         doc = doc[4:]
