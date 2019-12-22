@@ -1,5 +1,5 @@
-from image import GreyScaleImage, SilhouetteImage
-from input_web import ChoresBoardDocument
+from document_image import GreyScaleImage, SilhouetteImage
+from document_web import ChoresBoardDocument
 from printer_repo import PrinterRepo
 from document import TextDocument
 
