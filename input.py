@@ -1,5 +1,4 @@
 from document_image import GreyScaleImage, SilhouetteImage
-from document_web import ChoresBoardDocument
 from printer_repo import PrinterRepo
 from requests import TechSupportOathRequest, NotMyBusinessRequest, HAL9000WarningRequest, RawTextRequest, \
     ChoresBoardRequest

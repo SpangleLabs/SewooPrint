@@ -3,8 +3,9 @@ import json
 import flask
 from flask import request, abort
 
-from document_web import ChoresBoardDocument
 from printer_repo import PrinterRepo
+from requests import TechSupportOathRequest, NotMyBusinessRequest, HAL9000WarningRequest, RawTextRequest, \
+    ChoresBoardRequest
 
 app = flask.Flask(__name__)
 
@@ -29,11 +30,15 @@ def print_doc():
         doc = doc[4:]
     if doc.startswith("my "):
         doc = doc[3:]
-    if doc in ['chores board', 'chores', 'choresboard', 'chores list']:
-        printer = PrinterRepo().default_printer()
-        chores_doc = ChoresBoardDocument()
-        printer.print_document(chores_doc)
-        return "Printed chores document"
+    requests = [
+        TechSupportOathRequest(), NotMyBusinessRequest(), HAL9000WarningRequest(), RawTextRequest(),
+        ChoresBoardRequest()
+    ]
+    printer = PrinterRepo().default_printer()
+    for req in requests:
+        if req.matches_input(doc):
+            print(f"Printing {req.name}")
+            req.print(printer)
     return f"Unknown document {doc}"
 
 
