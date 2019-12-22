@@ -116,7 +116,7 @@ class HAL9000WarningRequest(Request):
         return "HAL9000 warning"
 
     def matches_input(self, user_input: str) -> bool:
-        return user_input in ['hal9000 warning', 'hal warning', 'hal', 'hal9000']
+        return user_input in ['hal9000 warning', 'hal warning', 'hal', 'hal9000', 'hal 9000', 'europa warning']
 
     def print(self, printer: Printer):
         """
