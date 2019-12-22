@@ -3,7 +3,7 @@ import json
 import flask
 from flask import request, abort
 
-from input_web import ChoresBoardDocument
+from document_web import ChoresBoardDocument
 from printer_repo import PrinterRepo
 
 app = flask.Flask(__name__)
