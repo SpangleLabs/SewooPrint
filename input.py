@@ -1,3 +1,5 @@
+from PIL import Image
+
 from document_image import GreyScaleImage, SilhouetteImage
 from printer_repo import PrinterRepo
 from print_requests import TechSupportOathRequest, NotMyBusinessRequest, HAL9000WarningRequest, RawTextRequest, \
@@ -105,12 +107,14 @@ class Input(object):
 
     @staticmethod
     def load_image_file(file_name):
-        document = GreyScaleImage(file_name)
+        image = Image.open(file_name).convert('RGBA')
+        document = GreyScaleImage(image)
         return document
 
     @staticmethod
     def load_image_silhouette_file(file_name):
-        document = SilhouetteImage(file_name)
+        image = Image.open(file_name).convert('RGBA')
+        document = SilhouetteImage(image)
         return document
 
 

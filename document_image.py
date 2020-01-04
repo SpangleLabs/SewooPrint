@@ -8,10 +8,10 @@ from document import Document
 
 class ImageDocument(Document, ABC):
 
-    def __init__(self, file_name):
+    def __init__(self, image):
         super().__init__()
         # Load, then resize image
-        self.image = Image.open(file_name).convert('RGBA')
+        self.image = image
         self.width, self.height = self.image.size
         self._resize_image()
 
