@@ -2,7 +2,7 @@ import json
 from abc import ABC, abstractmethod
 
 from document import TextDocument
-from document_image import WifiQRCodeImage
+from document_image import WifiQRCode
 from document_web import ChoresBoardDocument
 from printer import Printer
 
@@ -179,7 +179,7 @@ class WifiQRCodeRequest(Request):
         if not isinstance(config, list):
             config = [config]
         for wifi_network in config:
-            qr_document = WifiQRCodeImage(
+            qr_document = WifiQRCode(
                 wifi_network["SSID"],
                 wifi_network["password"],
                 auth_type=wifi_network["auth_type"]
