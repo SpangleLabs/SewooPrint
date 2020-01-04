@@ -1,9 +1,10 @@
 import math
 from abc import abstractmethod, ABC
 
+import qrcode
 from PIL import Image
 
-from document import Document
+from document import Document, TextDocument
 
 
 class ImageDocument(Document, ABC):
@@ -56,3 +57,25 @@ class GreyScaleImage(ImageDocument):
 class SilhouetteImage(ImageDocument):
     def is_pixel_dark(self, r, g, b, a):
         return a > 10
+
+
+class QRCodeImage(GreyScaleImage):
+
+    def __init__(self, qr_data):
+        self.qr_data = qr_data
+        image = qrcode.make(qr_data)
+        super().__init__(image)
+
+
+class WifiQRCode(Document):
+
+    def __init__(self, ssid, password, auth_type="WPA"):
+        super().__init__()
+        text = f"WIFI:T:{auth_type};S:{ssid};P:{password};;"
+        self.qr_image_doc = QRCodeImage(text)
+        self.title_doc = TextDocument().add_title(ssid).nl()
+        self.pass_doc = TextDocument().add_bold_text("Password: ").add_text(password)
+
+    @property
+    def encoded(self):
+        return self.title_doc.encoded + self.qr_image_doc.encoded + self.pass_doc.encoded

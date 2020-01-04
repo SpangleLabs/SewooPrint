@@ -32,7 +32,7 @@ def print_doc():
         doc = doc[3:]
     requests = [
         TechSupportOathRequest(), NotMyBusinessRequest(), HAL9000WarningRequest(), RawTextRequest(),
-        ChoresBoardRequest()
+        ChoresBoardRequest(), WifiQRCodeRequest()
     ]
     printer = PrinterRepo().default_printer()
     for req in requests:

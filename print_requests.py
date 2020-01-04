@@ -1,6 +1,8 @@
+import json
 from abc import ABC, abstractmethod
 
 from document import TextDocument
+from document_image import WifiQRCodeImage
 from document_web import ChoresBoardDocument
 from printer import Printer
 
@@ -160,3 +162,26 @@ class ChoresBoardRequest(Request):
     def print(self, printer: Printer):
         chores_document = ChoresBoardDocument()
         printer.print_document(chores_document)
+
+
+class WifiQRCodeRequest(Request):
+
+    @property
+    def name(self) -> str:
+        return "WIFI QR code"
+
+    def matches_input(self, user_input: str) -> bool:
+        return user_input in ["wifi", "wifi qr code", "wifi code", "wifi password", "wifi info"]
+
+    def print(self, printer: Printer):
+        with open("config_wifi.json", "r") as f:
+            config = json.load(f)
+        if not isinstance(config, list):
+            config = [config]
+        for wifi_network in config:
+            qr_document = WifiQRCodeImage(
+                wifi_network["SSID"],
+                wifi_network["password"],
+                auth_type=wifi_network["auth_type"]
+            )
+            printer.print_document(qr_document)
