@@ -5,7 +5,7 @@ from flask import request, abort
 
 from printer_repo import PrinterRepo
 from print_requests import TechSupportOathRequest, NotMyBusinessRequest, HAL9000WarningRequest, RawTextRequest, \
-    ChoresBoardRequest
+    ChoresBoardRequest, WifiQRCodeRequest
 
 app = flask.Flask(__name__)
 
