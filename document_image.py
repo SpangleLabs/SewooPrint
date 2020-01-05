@@ -1,5 +1,6 @@
 import math
 from abc import abstractmethod, ABC
+from typing import Tuple, Union
 
 import qrcode
 from PIL import Image
@@ -23,8 +24,8 @@ class ImageDocument(Document, ABC):
         pix_val = 0
         for x in range(self.width):
             for y in range(self.height):
-                r, g, b, a = self.image.getpixel((x, y))
-                if self.is_pixel_dark(r, g, b, a):
+                pixel = self.image.getpixel((x, y))
+                if self.is_pixel_dark(pixel):
                     pix_val += 2 ** (7 - pix_num)
                 if pix_num == 7:
                     self.encoded += bytes([pix_val])
@@ -45,18 +46,28 @@ class ImageDocument(Document, ABC):
         self.height = end_height
 
     @abstractmethod
-    def is_pixel_dark(self, r, g, b, a):
+    def is_pixel_dark(self, pixel: Union[int, Tuple[int, int, int], Tuple[int, int, int, int]]):
         pass
 
 
 class GreyScaleImage(ImageDocument):
-    def is_pixel_dark(self, r, g, b, a):
-        return r * g * b < 100 * 100 * 100 and a > 50
+    def is_pixel_dark(self, pixel):
+        if isinstance(pixel, int):
+            return pixel < 100
+        if len(pixel) == 4:
+            r, g, b, a = pixel
+            return r * g * b < 100 * 100 * 100 and a > 50
+        if len(pixel) == 3:
+            r, g, b = pixel
+            return r * g * b < 100 * 100 * 100
 
 
 class SilhouetteImage(ImageDocument):
-    def is_pixel_dark(self, r, g, b, a):
-        return a > 10
+    def is_pixel_dark(self, pixel):
+        if isinstance(pixel, Tuple) and len(pixel) == 4:
+            _, _, _, a = pixel
+            return a > 10
+        return True
 
 
 class QRCodeImage(GreyScaleImage):
