@@ -75,7 +75,4 @@ class WifiQRCode(Document):
         self.qr_image_doc = QRCodeImage(text)
         self.title_doc = TextDocument().add_title(ssid).nl()
         self.pass_doc = TextDocument().add_bold_text("Password: ").add_text(password)
-
-    @property
-    def encoded(self):
-        return self.title_doc.encoded + self.qr_image_doc.encoded + self.pass_doc.encoded
+        self.encoded = self.title_doc.encoded + self.qr_image_doc.encoded + self.pass_doc.encoded
