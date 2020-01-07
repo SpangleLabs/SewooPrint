@@ -47,3 +47,12 @@ class ChoresBoardDocument(TextDocument):
                 self.add_text(chore['next_date']).nl()
         # Spacing line
         self.nl()
+
+
+class SnuppsShelfDocument(TextDocument):
+
+    def __init__(self, shelf_data):
+        super().__init__()
+        self.add_title(shelf_data["name"])
+        for item in shelf_data["items"]:
+            self.add_text("__").add_text(item["title"]).nl()

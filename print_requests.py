@@ -1,9 +1,11 @@
 import json
 from abc import ABC, abstractmethod
 
+import requests
+
 from document import TextDocument
 from document_image import WifiQRCode
-from document_web import ChoresBoardDocument
+from document_web import ChoresBoardDocument, SnuppsShelfDocument
 from printer import Printer
 
 
@@ -185,3 +187,32 @@ class WifiQRCodeRequest(Request):
                 auth_type=wifi_network["auth_type"]
             )
             printer.print_document(qr_document)
+
+
+class SnuppsWishlistRequest(Request):
+
+    @property
+    def name(self) -> str:
+        return "Snupps wishlists"
+
+    def matches_input(self, user_input: str) -> bool:
+        return user_input in ["snupps", "snupps wishlists", "nintendo wishlists", "retro wishlists"]
+
+    def print(self, printer: Printer):
+        with open("config_snupps.json", "r") as f:
+            config = json.load(f)
+        s = requests.Session()
+        login_req = requests.Request(
+            "POST",
+            "https://snupps.com/ap/auth/login",
+            json={"userName": config["username"], "password": config["password"]}
+        )
+        login_resp = s.send(login_req.prepare())
+        user_id = login_resp.json()["userId"]
+        data_req = requests.Request("GET", f"https://snupps.com/ap/{user_id}/shelves", cookies=s.cookies)
+        data_resp = s.send(data_req.prepare())
+        j = data_resp.json()
+        for shelf in j["shelves"]:
+            if "wishlist" in shelf["name"].lower():
+                wishlist_doc = SnuppsShelfDocument(shelf)
+                printer.print_document(wishlist_doc)
