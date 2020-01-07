@@ -196,7 +196,10 @@ class SnuppsWishlistRequest(Request):
         return "Snupps wishlists"
 
     def matches_input(self, user_input: str) -> bool:
-        return user_input in ["snupps", "snupps wishlists", "nintendo wishlists", "retro wishlists"]
+        return user_input in [
+            "snupps", "snupps wishlists", "snupps wishlist", "nintendo wishlists", "nintendo wishlist",
+            "retro wishlists", "retro wishlist"
+        ]
 
     def print(self, printer: Printer):
         with open("config_snupps.json", "r") as f:
