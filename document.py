@@ -201,7 +201,7 @@ class ConcatDocument(Document):
 
     def __init__(self, documents):
         super().__init__()
-        self.encoded = "".join(document.encoded for document in documents)
+        self.encoded = b"".join(document.encoded for document in documents)
 
 
 class ColumnAlign(Enum):
