@@ -218,6 +218,6 @@ class SnuppsWishlistRequest(Request):
         wishlist_docs = []
         for shelf in j["shelves"]:
             if "wishlist" in shelf["name"].lower():
-                wishlist_docs.append(SnuppsShelfDocument(shelf))
+                wishlist_docs.append(SnuppsShelfDocument(shelf, extra_spacing=True))
         wishlists_doc = ConcatDocument(wishlist_docs)
         printer.print_document(wishlists_doc)

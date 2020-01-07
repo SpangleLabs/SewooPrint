@@ -51,8 +51,10 @@ class ChoresBoardDocument(TextDocument):
 
 class SnuppsShelfDocument(TextDocument):
 
-    def __init__(self, shelf_data):
+    def __init__(self, shelf_data, extra_spacing = False):
         super().__init__()
         self.add_title(shelf_data["name"])
         for item in shelf_data["items"]:
             self.add_text("__").add_text(item["title"]).nl()
+            if extra_spacing:
+                self.nl()
