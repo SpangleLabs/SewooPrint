@@ -5,7 +5,7 @@ from typing import Tuple, Union
 import qrcode
 from PIL import Image
 
-from document import Document, TextDocument
+from document import Document, TextDocument, ConcatDocument
 
 
 class ImageDocument(Document, ABC):
@@ -86,4 +86,4 @@ class WifiQRCode(Document):
         self.qr_image_doc = QRCodeImage(text)
         self.title_doc = TextDocument().add_title(ssid).nl()
         self.pass_doc = TextDocument().add_bold_text("Password: ").add_text(password)
-        self.encoded = self.title_doc.encoded + self.qr_image_doc.encoded + self.pass_doc.encoded
+        self.encoded = ConcatDocument([self.title_doc, self.qr_image_doc, self.pass_doc]).encoded

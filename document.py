@@ -197,6 +197,13 @@ class ColumnsSpec:
         self.columns = columns
 
 
+class ConcatDocument(Document):
+
+    def __init__(self, documents):
+        super().__init__()
+        self.encoded = "".join(document.encoded for document in documents)
+
+
 class ColumnAlign(Enum):
     left = 1
     right = 2

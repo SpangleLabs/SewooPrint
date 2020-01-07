@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 import requests
 
-from document import TextDocument
+from document import TextDocument, ConcatDocument
 from document_image import WifiQRCode
 from document_web import ChoresBoardDocument, SnuppsShelfDocument
 from printer import Printer
@@ -215,7 +215,9 @@ class SnuppsWishlistRequest(Request):
         data_req = requests.Request("GET", f"https://snupps.com/ap/{user_id}/shelves", cookies=s.cookies)
         data_resp = s.send(data_req.prepare())
         j = data_resp.json()
+        wishlist_docs = []
         for shelf in j["shelves"]:
             if "wishlist" in shelf["name"].lower():
-                wishlist_doc = SnuppsShelfDocument(shelf)
-                printer.print_document(wishlist_doc)
+                wishlist_docs.append(SnuppsShelfDocument(shelf))
+        wishlists_doc = ConcatDocument(wishlist_docs)
+        printer.print_document(wishlists_doc)
