@@ -193,7 +193,7 @@ class SnuppsWishlistRequest(Request):
 
     @property
     def name(self) -> str:
-        return "Snupps wishlists"
+        return "Retro wishlists"
 
     def matches_input(self, user_input: str) -> bool:
         return user_input in [
