@@ -221,3 +221,25 @@ class SnuppsWishlistRequest(Request):
                 wishlist_docs.append(SnuppsShelfDocument(shelf, extra_spacing=True))
         wishlists_doc = ConcatDocument(wishlist_docs)
         printer.print_document(wishlists_doc)
+
+
+class MenuRequest(Request):
+
+    def __init__(self, other_requests):
+        self.all_request_names = [r.name for r in other_requests]
+        self.all_request_names.append(self.name)
+
+    @property
+    def name(self) -> str:
+        return "Menu"
+
+    def matches_input(self, user_input: str) -> bool:
+        return user_input in [
+            "menu", "print menu", "list of requests", "possible print requests", "things i can print"
+        ]
+
+    def print(self, printer: Printer):
+        doc = TextDocument().add_title("Print menu")
+        for request_name in self.all_request_names:
+            doc.add_text(request_name).nl()
+        printer.print_document(doc)

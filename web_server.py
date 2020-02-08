@@ -5,7 +5,7 @@ from flask import request, abort
 
 from printer_repo import PrinterRepo
 from print_requests import TechSupportOathRequest, NotMyBusinessRequest, HAL9000WarningRequest, RawTextRequest, \
-    ChoresBoardRequest, WifiQRCodeRequest, SnuppsWishlistRequest
+    ChoresBoardRequest, WifiQRCodeRequest, SnuppsWishlistRequest, MenuRequest
 
 app = flask.Flask(__name__)
 
@@ -34,6 +34,7 @@ def print_doc():
         TechSupportOathRequest(), NotMyBusinessRequest(), HAL9000WarningRequest(), RawTextRequest(),
         ChoresBoardRequest(), WifiQRCodeRequest(), SnuppsWishlistRequest()
     ]
+    requests.append(MenuRequest(requests))
     printer = PrinterRepo().default_printer()
     for req in requests:
         if req.matches_input(doc):
