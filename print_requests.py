@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 
 import requests
 
+from cookie_protected_system import CookieProtectedScrapeSystem
 from document import TextDocument, ConcatDocument
 from document_image import WifiQRCode
 from document_web import ChoresBoardDocument, SnuppsShelfDocument
@@ -126,8 +127,8 @@ class HAL9000WarningRequest(Request):
         """
         Outputs HAL9000's warning from the end of 2010:Odyssey Two
         """
-        document = TextDocument()\
-            .add_bold_centered_text("ALL THESE WORLDS ARE YOURS-EXCEPT EUROPA").nl()\
+        document = TextDocument() \
+            .add_bold_centered_text("ALL THESE WORLDS ARE YOURS-EXCEPT EUROPA").nl() \
             .add_bold_centered_text("ATTEMPT NO LANDING THERE")
         printer.print_document(document)
 
@@ -221,6 +222,25 @@ class SnuppsWishlistRequest(Request):
                 wishlist_docs.append(SnuppsShelfDocument(shelf, extra_spacing=True))
         wishlists_doc = ConcatDocument(wishlist_docs)
         printer.print_document(wishlists_doc)
+
+
+class ShoppingListRequest(Request):
+
+    @property
+    def name(self) -> str:
+        return "Shopping list"
+
+    def matches_input(self, user_input: str) -> bool:
+        return user_input in ["shoping list", "groceries list", "grocery list", "shopping", "groceries", "grocery"]
+
+    def print(self, printer: Printer):
+        with open("config_shoppinglist.json", "r") as f:
+            config = json.load(f)
+        cookie_system = CookieProtectedScrapeSystem(
+            "./cookies_shoppinglist.json",
+            "https://shoppinglist.google.com/"
+        )
+        page = cookie_system.download_page()
 
 
 class MenuRequest(Request):

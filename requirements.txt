@@ -3,3 +3,4 @@ requests
 isodate
 flask
 qrcode
+selenium
