@@ -94,7 +94,7 @@ def process_shopping_list():
     printer = PrinterRepo().default_printer()
     doc = ShoppingListDocument(shops)
     printer.print_document(doc)
-    return "Printing shopping list now: " + json.dumps(shops)
+    return "Printing shopping list now: <pre>" + json.dumps(shops, indent=2) + "</pre>"
 
 
 if __name__ == '__main__':
