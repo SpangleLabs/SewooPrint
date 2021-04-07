@@ -58,3 +58,19 @@ class SnuppsShelfDocument(TextDocument):
             self.add_text("__").add_text(item["title"]).nl()
             if extra_spacing:
                 self.nl()
+
+
+class ShoppingListDocument(TextDocument):
+    DEFAULT_NAME = "default"
+
+    def __init__(self, shops):
+        super().__init__()
+        self.add_title("Shopping list")
+        for shop_name, items in shops.items():
+            if shop_name != self.DEFAULT_NAME:
+                self.nl()
+                self.add_bold_centered_text(shop_name)
+            for item in items:
+                self.add_text("__").add_text(item["name"]).nl()
+                if "comment" in item:
+                    self.add_text("- (").add_text(item["comment"]).add_text(")").nl()
