@@ -73,4 +73,4 @@ class ShoppingListDocument(TextDocument):
             for item in items:
                 self.add_text("__").add_text(item["name"]).nl()
                 if "comment" in item:
-                    self.add_text("- (").add_text(item["comment"]).add_text(")").nl()
+                    self.add_text("  (").add_text(item["comment"]).add_text(")").nl()
