@@ -69,7 +69,7 @@ class ShoppingListDocument(TextDocument):
         for shop_name, items in shops.items():
             if shop_name != self.DEFAULT_NAME:
                 self.nl()
-                self.add_bold_centered_text(shop_name)
+                self.add_bold_centered_text(shop_name).nl()
             for item in items:
                 self.add_text("__").add_text(item["name"]).nl()
                 if "comment" in item:
