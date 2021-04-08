@@ -71,7 +71,7 @@ def process_shopping_list():
     comment_regex = re.compile(r"\(([^)]+)\)$", re.IGNORECASE)
     shops = defaultdict(list)
     current_shop = ShoppingListDocument.DEFAULT_NAME
-    for line in text.split("\n"):
+    for line in text.splitlines():
         line_clean = line.strip()
         if not line_clean:
             continue
