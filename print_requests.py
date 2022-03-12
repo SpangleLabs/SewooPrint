@@ -220,7 +220,7 @@ class NotionWishlistRequest(Request):
 
     def matches_input(self, user_input: str) -> bool:
         return user_input in [
-            "notion wishlists", "notion wishlist", "nintendo wishlists", "nintendo wishlist",
+            "notion", "notion wishlists", "notion wishlist", "nintendo wishlists", "nintendo wishlist",
             "retro wishlists", "retro wishlist"
         ]
 
@@ -245,16 +245,16 @@ class NotionWishlistRequest(Request):
         post_data = {}
         if "filter" in db_conf:
             post_data["filter"] = db_conf["filter"]
-        cards_resp = requests.post(
+        cards_data = requests.post(
             f"https://api.notion.com/v1/databases/{db_conf['id']}/query",
             headers={
                 "Authorization": f"Bearer {token}",
                 "Notion-Version": "2022-02-22"
             },
             json=post_data
-        )
+        ).json()
         card_names = []
-        for card in cards_resp["results"]:
+        for card in cards_data["results"]:
             line = card["properties"]["Name"]["title"][0]["text"]["content"]
             if "append_property" in db_conf:
                 if card["properties"][db_conf["append_property"]]["type"] == "multi_select":
