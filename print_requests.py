@@ -1,11 +1,12 @@
 import json
 from abc import ABC, abstractmethod
+from typing import Dict
 
 import requests
 
 from document import TextDocument, ConcatDocument
 from document_image import WifiQRCode
-from document_web import ChoresBoardDocument, SnuppsShelfDocument
+from document_web import ChoresBoardDocument, SnuppsShelfDocument, NotionViewDocument
 from printer import Printer
 
 
@@ -189,40 +190,6 @@ class WifiQRCodeRequest(Request):
             printer.print_document(qr_document)
 
 
-class SnuppsWishlistRequest(Request):
-
-    @property
-    def name(self) -> str:
-        return "Retro wishlists"
-
-    def matches_input(self, user_input: str) -> bool:
-        return user_input in [
-            "snupps", "snupps wishlists", "snupps wishlist", "nintendo wishlists", "nintendo wishlist",
-            "retro wishlists", "retro wishlist"
-        ]
-
-    def print(self, printer: Printer):
-        with open("config_snupps.json", "r") as f:
-            config = json.load(f)
-        s = requests.Session()
-        login_req = requests.Request(
-            "POST",
-            "https://snupps.com/ap/auth/login",
-            json={"userName": config["username"], "password": config["password"]}
-        )
-        login_resp = s.send(login_req.prepare())
-        user_id = login_resp.json()["userId"]
-        data_req = requests.Request("GET", f"https://snupps.com/ap/{user_id}/shelves", cookies=s.cookies)
-        data_resp = s.send(data_req.prepare())
-        j = data_resp.json()
-        wishlist_docs = []
-        for shelf in j["shelves"]:
-            if "wishlist" in shelf["name"].lower():
-                wishlist_docs.append(SnuppsShelfDocument(shelf, extra_spacing=True))
-        wishlists_doc = ConcatDocument(wishlist_docs)
-        printer.print_document(wishlists_doc)
-
-
 class MenuRequest(Request):
 
     def __init__(self, other_requests):
@@ -243,3 +210,56 @@ class MenuRequest(Request):
         for request_name in self.all_request_names:
             doc.add_text(request_name).nl()
         printer.print_document(doc)
+
+
+class NotionWishlistRequest(Request):
+
+    @property
+    def name(self) -> str:
+        return "Retro wishlists"
+
+    def matches_input(self, user_input: str) -> bool:
+        return user_input in [
+            "notion wishlists", "notion wishlist", "nintendo wishlists", "nintendo wishlist",
+            "retro wishlists", "retro wishlist"
+        ]
+
+    def print(self, printer: Printer):
+        with open("config_notion.json", "r") as f:
+            config = json.load(f)
+        database_docs = []
+        for database_conf in config["databases"]:
+            database_docs.append(self.notion_db_document(config['token'], database_conf))
+        notion_doc = ConcatDocument(database_docs)
+        printer.print_document(notion_doc)
+
+    def notion_db_document(self, token: str, db_conf: Dict) -> NotionViewDocument:
+        database = requests.get(
+            f"https://api.notion.com/v1/databases/{db_conf['id']}",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Notion-Version": "2022-02-22"
+            }
+        ).json()
+        title = database["title"][0]["text"]["content"]
+        post_data = {}
+        if "filter" in db_conf:
+            post_data["filter"] = db_conf["filter"]
+        cards_resp = requests.post(
+            f"https://api.notion.com/v1/databases/{db_conf['id']}/query",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Notion-Version": "2022-02-22"
+            },
+            json=post_data
+        )
+        card_names = []
+        for card in cards_resp["results"]:
+            line = card["properties"]["Name"]["title"][0]["text"]["content"]
+            if "append_property" in db_conf:
+                if card["properties"][db_conf["append_property"]]["type"] == "multi_select":
+                    values = ", ".join(x["name"] for x in card["properties"][db_conf["append_property"]]["multi_select"])
+                    if values:
+                        line += f" ({values})"
+            card_names.append(line)
+        return NotionViewDocument(title, card_names, extra_spacing=True)

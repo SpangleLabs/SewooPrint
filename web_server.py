@@ -8,7 +8,7 @@ from flask import request, abort
 from document_web import ShoppingListDocument
 from printer_repo import PrinterRepo
 from print_requests import TechSupportOathRequest, NotMyBusinessRequest, HAL9000WarningRequest, RawTextRequest, \
-    ChoresBoardRequest, WifiQRCodeRequest, SnuppsWishlistRequest, MenuRequest
+    ChoresBoardRequest, WifiQRCodeRequest, MenuRequest, NotionWishlistRequest
 
 app = flask.Flask(__name__)
 
@@ -35,7 +35,7 @@ def print_doc():
         doc = doc[3:]
     requests = [
         TechSupportOathRequest(), NotMyBusinessRequest(), HAL9000WarningRequest(), RawTextRequest(),
-        ChoresBoardRequest(), WifiQRCodeRequest(), SnuppsWishlistRequest()
+        ChoresBoardRequest(), WifiQRCodeRequest(), NotionWishlistRequest()
     ]
     requests.append(MenuRequest(requests))
     printer = PrinterRepo().default_printer()

@@ -74,3 +74,14 @@ class ShoppingListDocument(TextDocument):
                 self.add_text("__").add_text(item["name"]).nl()
                 if "comment" in item:
                     self.add_text("  (").add_text(item["comment"]).add_text(")").nl()
+
+
+class NotionViewDocument(TextDocument):
+
+    def __init__(self, title: str, card_lines: List[str], extra_spacing = False) -> None:
+        super().__init__()
+        self.add_title(title)
+        for card_line in card_lines:
+            self.add_text("__").add_text(card_line).nl()
+            if extra_spacing:
+                self.nl()
