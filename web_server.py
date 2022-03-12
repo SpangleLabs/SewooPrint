@@ -43,6 +43,8 @@ def print_doc():
         if req.matches_input(doc):
             print(f"Printing {req.name}")
             req.print(printer)
+            return f"Printing {req.name}"
+    print(f"Unknown document {doc}")
     return f"Unknown document {doc}"
 
 
