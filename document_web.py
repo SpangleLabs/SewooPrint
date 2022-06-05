@@ -1,3 +1,4 @@
+import datetime
 import json
 from typing import List, Dict, Optional
 
@@ -66,6 +67,7 @@ class ShoppingListDocument(TextDocument):
     def __init__(self, shops):
         super().__init__()
         self.add_title("Shopping list")
+        self.add_text(f"Date: {datetime.datetime.today().isoformat()}")
         for shop_name, items in shops.items():
             if shop_name != self.DEFAULT_NAME:
                 self.nl()
